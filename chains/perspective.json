@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "perspective",
+ "api": "perspective_api.json",
+ "label": "效果图（SU/白模截图转写实）",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "landscape architecture perspective, realistic render, architectural visualization, soft shadows, high detail",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.9,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

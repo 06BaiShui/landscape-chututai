@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "concept_sketch",
+ "api": "concept_sketch_api.json",
+ "label": "一句话概念草图（草图底稿）",
+ "category": "方案表达",
+ "technical": false,
+ "needs_image": false,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "hand-drawn landscape architecture concept sketch, loose pencil and marker linework, schematic design draft, white paper background, quick design expression",
+ "style_tail": "hand-drawn concept sketch, loose pencil linework, marker shading, schematic design, white paper background, rough draft style",
+ "negative_extra": "photorealistic, photograph, realistic render, 3d render",
+ "denoise_default": 1.0,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "watercolor",
+ "api": "watercolor_api.json",
+ "category": "通用",
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿",
+ "label": "水彩风格化（scribble 控制网）",
+ "needs_image": true,
+ "technical": false,
+ "denoise_default": 0.65,
+ "preset_prompt": "shuicai watercolor, Thomas Schaller style, texture of watercolor paper, smudges and graininess of watercolors, Joseph Zbukvic, ethereal, high-definition watercolor, best quality, ultra detailed",
+ "style_tail": "watercolor painting, paper texture, soft washes, high detail"
+}

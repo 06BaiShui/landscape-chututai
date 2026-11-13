@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图像编辑台 · 区域重绘 / 批注</title>
+<style>
+  :root{
+    --paper:#f6f5f1; --card:#fff; --ink:#23281f; --muted:#7c8176;
+    --line:#e3e0d7; --accent:#46624a; --accent-2:#5d7f61; --soft:#ebf0ea;
+    --warn:#a8542f; --orange:#e07b39;
+    --shadow:0 1px 2px rgba(30,35,25,.05),0 8px 24px rgba(30,35,25,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--paper);color:var(--ink);
+    font:14px/1.6 "PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  header{display:flex;align-items:center;gap:12px;padding:0 20px;height:56px;
+    background:rgba(255,255,255,.82);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;backdrop-filter:blur(8px)}
+  header h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.05em}
+  header .sub{color:var(--muted);font-size:12px}
+  .spacer{flex:1}
+  .nav{display:flex;gap:4px;background:var(--soft);padding:3px;border-radius:10px;border:1px solid #dce5da}
+  .nav a{padding:5px 12px;border-radius:7px;font-size:12px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .nav a.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:600}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--soft);
+    color:var(--accent);font-size:12px;border:1px solid #d8e2d7;white-space:nowrap}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:#4b8b57;box-shadow:0 0 0 3px rgba(75,139,87,.14)}
+  .pill.off{background:#fbeee9;color:var(--warn);border-color:#f0d8cd}
+  .pill.off .dot{background:#c2603a;box-shadow:0 0 0 3px rgba(194,96,58,.14)}
+
+  .work{display:grid;grid-template-columns:288px minmax(0,1fr) 286px;gap:14px;padding:14px;height:calc(100vh - 56px)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    overflow:auto;display:flex;flex-direction:column}
+  .sec{padding:13px 14px;border-bottom:1px solid var(--line)}
+  .sec:last-child{border-bottom:0}
+  .sec h3{margin:0 0 9px;font-size:11px;font-weight:600;color:#8b927f;letter-spacing:.09em}
+  label.f{display:block;margin:10px 0 5px;font-size:11.5px;color:var(--muted)}
+  textarea,input[type=text],input[type=number],select{width:100%;border:1px solid var(--line);border-radius:8px;
+    padding:7px 9px;font:inherit;font-size:12.5px;color:var(--ink);background:#fcfcfa;outline:none}
+  textarea{resize:vertical;min-height:60px;line-height:1.55}
+  textarea:focus,input:focus,select:focus{border-color:var(--accent-2);background:#fff}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  input[type=color]{width:38px;height:30px;padding:2px;border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer}
+  .btn{border:1px solid var(--line);background:#fcfcfa;color:var(--ink);border-radius:8px;padding:7px 11px;
+    font:inherit;font-size:12px;cursor:pointer;transition:.14s;white-space:nowrap}
+  .btn:hover{border-color:var(--accent-2);background:var(--soft)}
+  .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.pri:hover{background:#3b543f}
+  .btn.warn{color:var(--warn)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.sm{padding:5px 8px;font-size:11px}
+  .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .row.tight{gap:4px}
+  .grow{flex:1;min-width:0}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .tool{border:1px solid var(--line);background:#fcfcfa;border-radius:8px;padding:7px 3px;font-size:11.5px;
+    cursor:pointer;text-align:center;transition:.14s;line-height:1.3}
+  .tool:hover{border-color:var(--accent-2)}
+  .tool.on{border-color:var(--accent);background:var(--soft);color:var(--accent);font-weight:600;box-shadow:inset 0 0 0 1px var(--accent)}
+  .tool b{display:block;font-size:15px;font-weight:400;line-height:1.2}
+  .tabs{display:flex;gap:5px;margin-bottom:2px}
+  .tabs .btn{flex:1;text-align:center}
+  .tabs .btn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .hint{font-size:11px;color:#9aa094;line-height:1.65;margin-top:7px}
+  .tip{font-size:11.5px;line-height:1.65;color:#6b7a68;background:var(--soft);border:1px solid var(--line);
+    border-radius:8px;padding:7px 9px;margin-top:8px}
+  .tip b{color:#4d6b4a}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);cursor:pointer}
+  .chk input{accent-color:var(--accent);margin:0}
+
+  .center{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;min-width:0;overflow:hidden}
+  .cbar{display:flex;align-items:center;gap:9px;padding:9px 13px;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+  .cbar b{color:var(--ink);font-weight:600}
+  .cbar .spacer{flex:1}
+  .stage{flex:1;overflow:auto;background:#eceae4;background-image:
+    linear-gradient(45deg,rgba(0,0,0,.025) 25%,transparent 25%,transparent 75%,rgba(0,0,0,.025) 75%),
+    linear-gradient(45deg,rgba(0,0,0,.025) 25%,transparent 25%,transparent 75%,rgba(0,0,0,.025) 75%);
+    background-size:20px 20px;background-position:0 0,10px 10px;
+    display:flex;align-items:flex-start;justify-content:center;padding:18px}
+  #cw{position:relative;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.14);line-height:0;
+    max-width:100%;flex:0 0 auto;cursor:crosshair;touch-action:none}
+  #cw canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+  #cvBase{position:relative}
+  #cvMask{opacity:.72}
+  #cvGhost{pointer-events:none}
+  #cvAnno{pointer-events:none}
+  #cw.hideMask #cvMask{opacity:0}
+  .dropempty{color:#a8ada2;text-align:center;margin:auto;padding:60px 20px;line-height:2}
+  .dropempty strong{display:block;color:var(--ink);font-size:14px}
+  .stage.hot{outline:2px dashed var(--accent-2);outline-offset:-6px}
+  .msg{padding:8px 13px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);min-height:34px}
+  .msg.err{color:var(--warn);background:#fdf3ef}
+  .msg.ok{color:var(--accent);background:var(--soft)}
+
+  .resimg{width:100%;display:block;border-radius:9px;border:1px solid var(--line);background:#fbfaf7;margin-top:8px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:11.5px;margin-top:9px}
+  .kv span:nth-child(odd){color:var(--muted)}
+  .kv span:nth-child(even){font-variant-numeric:tabular-nums;word-break:break-all}
+  .layer{display:flex;align-items:center;gap:6px;padding:5px 7px;border:1px solid var(--line);border-radius:7px;
+    margin-bottom:4px;font-size:11.5px;cursor:pointer;background:#fcfcfa}
+  .layer.on{border-color:var(--accent);background:var(--soft)}
+  .layer .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .layer i{font-style:normal;color:var(--muted)}
+  pre.log{font:11px/1.5 Consolas,monospace;white-space:pre-wrap;word-break:break-all;background:#fbfaf7;
+    border:1px solid var(--line);border-radius:8px;padding:8px;max-height:130px;overflow:auto;margin:8px 0 0}
+  #file{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>图像编辑台</h1>
+  <span class="sub">圈一块重绘 · 图上批注</span>
+  <span class="spacer"></span>
+  <nav class="nav">
+    <a href="/">出图台</a>
+    <a href="/editor.html" class="on">编辑台</a>
+    <a href="/board.html">展板台</a>
+  </nav>
+  <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">检测中…</span></span>
+</header>
+
+<div class="work">
+  <!-- ================= 左：工具 ================= -->
+  <aside class="panel">
+    <div class="sec">
+      <h3>01 · 载入图像</h3>
+      <div class="row">
+        <button class="btn grow" id="pickFile">选本地图片…</button>
+        <button class="btn" id="revealBtn" title="打开当前图所在文件夹" disabled>文件夹</button>
+      </div>
+      <input type="file" id="file" accept="image/*">
+      <label class="f">从成果库挑一张（含已归档成图）</label>
+      <select id="libPick"><option value="">载入中…</option></select>
+      <div class="row" style="margin-top:6px">
+        <input type="text" class="grow" id="libSearch" placeholder="按文件名筛一下">
+        <button class="btn sm" id="libLoad">载入</button>
+      </div>
+      <div class="hint">也可以直接从出图台结果区点「编辑 / 局部重绘」跳过来，或直接把图片拖到中间画布。</div>
+    </div>
+
+    <div class="sec">
+      <h3>02 · 模式</h3>
+      <div class="tabs">
+        <button class="btn on" data-mode="mask">🎯 区域重绘</button>
+        <button class="btn" data-mode="anno">✍️ 批注</button>
+      </div>
+      <div class="tip" id="modeTip"></div>
+    </div>
+
+    <!-- 遮罩工具 -->
+    <div id="maskSec">
+      <div class="sec">
+        <h3>选区工具 · 白 = 要重画</h3>
+        <div class="grid3" id="maskTools">
+          <div class="tool on" data-t="brush"><b>🖌</b>画笔</div>
+          <div class="tool" data-t="eraser"><b>🧽</b>橡皮</div>
+          <div class="tool" data-t="rect"><b>▭</b>矩形</div>
+          <div class="tool" data-t="ellipse"><b>◯</b>椭圆</div>
+          <div class="tool" data-t="poly"><b>⬡</b>多边形</div>
+          <div class="tool" data-t="lasso"><b>✎</b>自由套索</div>
+        </div>
+        <label class="f">笔刷 / 线宽 <span id="brushV">48</span> px</label>
+        <input type="range" id="brush" min="4" max="240" value="48">
+        <div class="row" style="margin-top:8px">
+          <label class="chk"><input type="checkbox" id="feather" checked>软边羽化</label>
+          <span class="spacer"></span>
+          <label class="chk"><input type="checkbox" id="showMask" checked>显示选区</label>
+        </div>
+        <div class="row" style="margin-top:9px">
+          <button class="btn sm" id="maskClear">清空选区</button>
+          <button class="btn sm" id="maskInvert">反选</button>
+          <button class="btn sm" id="maskClose" disabled title="闭合多边形">闭合多边形</button>
+        </div>
+        <div class="hint">矩形/椭圆拖一下；多边形逐点点击后点「闭合」，双击也可闭合；套索按住拖一圈松手即可。笔画别超出想改的东西太多——多涂的部分也会一起重画。</div>
+      </div>
+
+      <div class="sec">
+        <h3>改成什么 · 一句话</h3>
+        <textarea id="prompt" placeholder="肯定式描述「这里要变成什么」，例：open lawn with low ground cover, sunlight on grass"></textarea>
+        <div class="tip"><b>别写「把树去掉」</b>，模型不知道该填什么，容易糊一片。要写填进去的东西。</div>
+        <label class="f">改动强度 denoise</label>
+        <select id="denoise">
+          <option value="0.65">0.65 · 只换材质 / 颜色（保留原形体）</option>
+          <option value="0.8">0.80 · 换树种 / 铺装 / 加减小物件</option>
+          <option value="1" selected>1.00 · 彻底换内容（水景、地形、体量）</option>
+        </select>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="f">出图档位</label>
+            <select id="tier"><option value="draft">draft · 草稿 8 步</option>
+              <option value="review" selected>review · 看效果 20 步</option>
+              <option value="final">final · 定稿 24 步</option></select></div>
+          <div><label class="f">种子（可空）</label><input type="number" id="seed" placeholder="随机"></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn pri grow" id="runBtn" disabled>▶ 只重画圈起来的这块</button>
+        </div>
+        <div class="hint">一次只改一处。接缝明显就把 denoise 往下调（0.75），不是往上调。区外像素被锁死，不会动。</div>
+      </div>
+    </div>
+
+    <!-- 批注工具 -->
+    <div id="annoSec" hidden>
+      <div class="sec">
+        <h3>批注工具</h3>
+        <div class="grid3" id="annoTools">
+          <div class="tool" data-t="select"><b>➚</b>选择</div>
+          <div class="tool on" data-t="text"><b>Ｔ</b>文字</div>
+          <div class="tool" data-t="arrow"><b>↗</b>箭头</div>
+          <div class="tool" data-t="rect"><b>▭</b>方框</div>
+          <div class="tool" data-t="ellipse"><b>◯</b>椭圆框</div>
+          <div class="tool" data-t="line"><b>／</b>直线</div>
+        </div>
+        <div class="row tight" style="margin-top:8px">
+          <button class="btn sm" id="annoDup">复制</button>
+          <button class="btn sm" id="annoDel">删除</button>
+          <button class="btn sm" id="annoUndo">撤销</button>
+          <button class="btn sm" id="annoClear">全清</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h3>文字样式 · 字体 / 字号</h3>
+        <label class="f">字体（只列本机已装，选了不会回退）</label>
+        <select id="font"><option value="">载入中…</option></select>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="f">字号 px</label><input type="number" id="size" value="36" min="8" max="400"></div>
+          <div><label class="f">线宽 px</label><input type="number" id="stroke" value="4" min="1" max="60"></div>
+        </div>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="f">颜色</label><input type="color" id="color" value="#c0392b"></div>
+          <div><label class="f">文字底色</label><div class="row"><input type="color" id="bg" value="#ffffff">
+            <label class="chk"><input type="checkbox" id="bgOn" checked>启用</label></div></div>
+        </div>
+        <div class="row" style="margin-top:9px">
+          <label class="chk"><input type="checkbox" id="bold">加粗</label>
+          <label class="chk"><input type="checkbox" id="italic">斜体</label>
+        </div>
+        <label class="f">当前选中元素的文字（不选时＝新建默认值）</label>
+        <textarea id="annoText" placeholder="点击画布放置文字，然后在这里改内容；支持换行" style="min-height:52px"></textarea>
+        <div class="hint">选中元素后可拖动移动、拖右下角小方块缩放；Delete 删除、方向键微调（Shift ×10）、Ctrl+Z 撤销。</div>
+      </div>
+
+      <div class="sec">
+        <h3>导出</h3>
+        <div class="row">
+          <button class="btn pri grow" id="exportAnno" disabled>保存批注图 PNG</button>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn grow" id="annoToBoard" disabled>送去展板台排版</button>
+        </div>
+        <label class="f">保存到项目（不选则落 设计项目/_展板/今天）</label>
+        <select id="project"><option value="">公共目录</option></select>
+        <div class="hint">批注图与展板一样落在「出图/展板」，不会混进 AI 方案稿，也不会被成果库当成 AI 出图统计。</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= 中：画布 ================= -->
+  <section class="center">
+    <div class="cbar">
+      <b id="imgName">还没载入图片</b>
+      <span id="imgSize"></span>
+      <span class="spacer"></span>
+      <span id="toolNow">画笔</span>
+      <span>·</span>
+      <span id="cursorPos">—</span>
+      <button class="btn sm" id="fitBtn">适配宽度</button>
+      <button class="btn sm" id="origBtn">100%</button>
+    </div>
+    <div class="stage" id="stage">
+      <div class="dropempty" id="empty"><strong>把图片拖到这里</strong>或左侧选一张成果库里的图<br>
+        圈选要改的区域 → 写「改成什么」→ 只重画这一块<br>切到「批注」可以在图上写字、画箭头、加框线</div>
+      <div id="cw" hidden>
+        <canvas id="cvBase"></canvas>
+        <canvas id="cvMask"></canvas>
+        <canvas id="cvAnno"></canvas>
+        <canvas id="cvGhost"></canvas>
+      </div>
+    </div>
+    <div class="msg" id="msg">就绪。ComfyUI 未启动时仍可批注与导出，只有「区域重绘」需要它。</div>
+  </section>
+
+  <!-- ================= 右：结果 / 图层 ================= -->
+  <aside class="panel">
+    <div class="sec">
+      <h3>重绘结果</h3>
+      <div id="resBox" style="color:var(--muted);font-size:11.5px;line-height:1.8">重绘完成后显示在这里。可以「设为底图继续改」做下一处修改。</div>
+      <img id="resImg" class="resimg" hidden alt="">
+      <div class="kv" id="resKv" hidden>
+        <span>用时</span><span id="k1">—</span>
+        <span>峰值显存</span><span id="k2">—</span>
+        <span>尺寸</span><span id="k3">—</span>
+      </div>
+      <div class="row" style="margin-top:9px">
+        <button class="btn grow" id="useResult" disabled>设为底图继续改</button>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn grow" id="resToBoard" disabled>送去展板台</button>
+        <button class="btn warn" id="resDel" disabled>删掉</button>
+      </div>
+      <pre class="log" id="log" hidden></pre>
+    </div>
+    <div class="sec">
+      <h3>批注图层 <span id="layerCount" style="color:var(--muted);font-weight:400"></span></h3>
+      <div id="layers"><div class="hint">还没有批注元素。</div></div>
+    </div>
+    <div class="sec">
+      <h3>这一步的实测经验</h3>
+      <div class="tip">
+        <b>遮罩边缘别贴太紧</b>，引擎里 GrowMask 会自动外扩 12px 融合。<br>
+        <b>同尺寸输出</b>：长边超 1536 会先压到 1536，若原图很大，建议在这张 1536 版上改到底，最后再统一放大一次。<br>
+        <b>草稿档只判构图</b>，8 步的材质和光影不能作数；定稿用 review / final。<br>
+        <b>一批图固定一个底模</b>，频繁换底模会把显存和页面文件一起打爆。
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const API = (u,o) => fetch(u,o).then(r=>r.json());
+const POST = (u,b) => API(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+
+const S = {
+  mode:'mask', mtool:'brush', atool:'text', tool:'brush',
+  img:null, W:0, H:0, path:null, name:'', srcUrl:null,
+  fonts:[], projects:[], libItems:[],
+  annos:[], sel:null, undo:[], nextId:1,
+  drawing:false, start:null, last:null, poly:[], lasso:[], resizing:false,
+  zoom:1, job:null, poll:null, result:null, style:null
+};
+const cvBase=$('cvBase'), cvMask=$('cvMask'), cvAnno=$('cvAnno'), cvGhost=$('cvGhost');
+const cb=cvBase.getContext('2d'), mv=cvMask.getContext('2d'), ab=cvAnno.getContext('2d'), gh=cvGhost.getContext('2d');
+// 遮罩缓冲：黑底 + 白笔（导出用，符合「白=要改」）；cvMask 只是给人看的橙色叠层
+const mbuf=document.createElement('canvas'), mb=mbuf.getContext('2d',{willReadFrequently:true});
+
+function note(msg,kind){
+  const el=$('msg'); el.textContent=msg; el.className='msg'+(kind?' '+kind:'');
+}
+function state(){
+  return API('/api/state').then(d=>{
+    const on=d.comfy&&d.comfy.online;
+    $('pill').className='pill'+(on?'':' off');
+    $('pillTxt').textContent=on?('ComfyUI 在线 · 可用 '+d.comfy.vram_free+' GB'):'ComfyUI 未启动';
+    S.projects=d.projects||[];
+    const sel=$('project'), cur=sel.value; sel.innerHTML='<option value="">公共目录（设计项目/_展板）</option>';
+    S.projects.forEach(p=>{const o=document.createElement('option');o.value=p.path;o.textContent=p.cat+' / '+p.name;sel.appendChild(o);});
+    sel.value=cur;
+    return d;
+  }).catch(()=>{});
+}
+function brush(){ return +$('brush').value; }
+function curStyle(){
+  return {
+    font:$('font').value || '"Microsoft YaHei",sans-serif',
+    size:+$('size').value||36, color:$('color').value||'#c0392b',
+    stroke:+$('stroke').value||4, bold:$('bold').checked, italic:$('italic').checked,
+    bg:$('bgOn').checked?$('bg').value:null,
+    text:$('annoText').value||'批注文字'
+  };
+}
+
+/* ---------------------------------------------------------- 图像载入 */
+function resetLayers(){
+  [cvBase,cvMask,cvAnno,cvGhost].forEach(c=>{c.width=S.W;c.height=S.H;});
+  mbuf.width=S.W; mbuf.height=S.H;
+  cb.clearRect(0,0,S.W,S.H); cb.drawImage(S.img,0,0,S.W,S.H);
+  mb.fillStyle='#000'; mb.fillRect(0,0,S.W,S.H);
+  mv.clearRect(0,0,S.W,S.H); ab.clearRect(0,0,S.W,S.H); gh.clearRect(0,0,S.W,S.H);
+  S.annos=[]; S.sel=null; S.undo=[]; redrawAnno(); renderLayers();
+  $('imgName').textContent=S.name; $('imgSize').textContent=S.W+' × '+S.H+' px';
+  $('empty').hidden=true; $('cw').hidden=false;
+  $('runBtn').disabled=false; $('exportAnno').disabled=false; $('annoToBoard').disabled=false;
+  $('revealBtn').disabled=!S.path;
+  fitWidth();
+}
+function loadImage(url,path,name){
+  const im=new Image();
+  im.onload=()=>{
+    S.img=im; S.W=im.naturalWidth; S.H=im.naturalHeight;
+    S.path=path||null; S.name=name||'未命名'; S.srcUrl=url;
+    resetLayers(); note('已载入 '+S.name+'。切工具圈选，或切到「批注」写字。','ok');
+  };
+  im.onerror=()=>note('这张图读不出来：'+(path||url),'err');
+  im.src=url;
+}
+function loadPath(p,name){
+  loadImage('/api/file?path='+encodeURIComponent(p),p,name||p.split(/[\\/]/).pop());
+}
+function fitWidth(){
+  const stage=$('stage'); const avail=stage.clientWidth-36;
+  S.zoom=Math.min(1,avail/Math.max(1,S.W));
+  applyZoom();
+}
+function applyZoom(){
+  if(!S.W) return;
+  $('cw').style.width=Math.round(S.W*S.zoom)+'px';
+  $('cw').style.height=Math.round(S.H*S.zoom)+'px';
+}
+function readLocal(f){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    loadImage(fr.result,null,f.name);
+    // 本地图先落一次盘，后续每轮重绘都只传路径，不重复搬几 MB 的 base64
+    POST('/api/upload_file',{b64:fr.result,name:f.name,kind:'source'}).then(d=>{
+      if(d.path){S.path=d.path;S.name=f.name;$('revealBtn').disabled=false;note('已载入 '+f.name+'（已缓存到 上传/），可以圈选重绘了。','ok');}
+      else note(d.error||'缓存底图失败','err');
+    }).catch(e=>note('缓存底图失败：'+e,'err'));
+  };
+  fr.readAsDataURL(f);
+}
+
+/* ---------------------------------------------------------- 坐标 */
+function pos(e){
+  const r=cvBase.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*S.W/r.width, y:(e.clientY-r.top)*S.H/r.height};
+}
+function norm(a,b){ return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(a.x-b.x),h:Math.abs(a.y-b.y)}; }
+
+/* ---------------------------------------------------------- 遮罩绘制 */
+function dual(draw){
+  mv.save(); mv.globalCompositeOperation='source-over';
+  mv.strokeStyle='rgba(226,90,45,.85)'; mv.fillStyle='rgba(226,90,45,.55)';
+  draw(mv,true); mv.restore();
+  mb.save(); mb.globalCompositeOperation='source-over';
+  mb.strokeStyle='#fff'; mb.fillStyle='#fff';
+  draw(mb,false); mb.restore();
+}
+function paintLine(a,b){
+  dual((c,isView)=>{
+    c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(b.x,b.y);
+    c.lineWidth=brush(); c.lineCap='round'; c.lineJoin='round';
+    if($('feather').checked){ c.shadowBlur=brush()*.55;
+      c.shadowColor=isView?'rgba(226,90,45,.85)':'rgba(255,255,255,.95)'; }
+    c.stroke();
+  });
+}
+function eraseAt(p,erase){
+  const r=brush()/2;
+  mv.save(); mv.globalCompositeOperation='destination-out';
+  mv.beginPath(); mv.arc(p.x,p.y,r,0,Math.PI*2); mv.fill(); mv.restore();
+  mb.save(); mb.fillStyle='#000'; mb.beginPath(); mb.arc(p.x,p.y,r,0,Math.PI*2); mb.fill(); mb.restore();
+}
+function fillShape(pts,kind){
+  dual(c=>{
+    c.beginPath();
+    if(kind==='rect'){const r=norm(pts[0],pts[1]);c.rect(r.x,r.y,r.w,r.h);}
+    else if(kind==='ellipse'){const r=norm(pts[0],pts[1]);
+      c.ellipse(r.x+r.w/2,r.y+r.h/2,Math.max(1,r.w/2),Math.max(1,r.h/2),0,0,Math.PI*2);}
+    else {pts.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();}
+    c.fill();
+  });
+}
+function clearGhost(){ gh.clearRect(0,0,S.W,S.H); }
+function ghostPreview(p,kind){
+  clearGhost(); gh.save(); gh.strokeStyle='#e07b39'; gh.fillStyle='rgba(224,123,57,.16)';
+  gh.lineWidth=Math.max(2,2/S.zoom); gh.setLineDash([8,6]);
+  if((kind==='rect'||kind==='ellipse')&&S.start){
+    const r=norm(S.start,p); gh.beginPath();
+    if(kind==='rect')gh.rect(r.x,r.y,r.w,r.h);
+    else gh.ellipse(r.x+r.w/2,r.y+r.h/2,Math.max(1,r.w/2),Math.max(1,r.h/2),0,0,Math.PI*2);
+    gh.fill(); gh.stroke();
+  }else if(kind==='poly'&&S.poly.length){
+    gh.beginPath(); S.poly.forEach((q,i)=>i?gh.lineTo(q.x,q.y):gh.moveTo(q.x,q.y));
+    if(p)gh.lineTo(p.x,p.y); gh.stroke();
+  }else if(kind==='lasso'&&S.lasso.length){
+    gh.beginPath(); S.lasso.forEach((q,i)=>i?gh.lineTo(q.x,q.y):gh.moveTo(q.x,q.y));
+    if(p)gh.lineTo(p.x,p.y); gh.stroke();
+  }
+  gh.restore();
+}
+function closePoly(){
+  if(S.poly.length>=3){ fillShape(S.poly,'poly'); S.poly=[]; clearGhost(); $('maskClose').disabled=true; note('多边形选区已填充。','ok'); }
+  else note('多边形至少要 3 个点','err');
+}
+function maskClear(){
+  mb.fillStyle='#000';mb.fillRect(0,0,S.W,S.H);mv.clearRect(0,0,S.W,S.H);
+  S.poly=[];S.lasso=[];clearGhost();$('maskClose').disabled=true;note('选区已清空。');
+}
+function maskInvert(){
+  if(!S.W)return;
+  const id=mb.getImageData(0,0,S.W,S.H);
+  for(let i=0;i<id.data.length;i+=4){const v=255-id.data[i];id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;}
+  mb.putImageData(id,0,0); syncViewFromBuf(); note('已反选：原来保留的地方变成要重画。','ok');
+}
+function syncViewFromBuf(){
+  const id=mb.getImageData(0,0,S.W,S.H), out=mv.createImageData(S.W,S.H);
+  for(let i=0;i<id.data.length;i+=4){
+    out.data[i]=226;out.data[i+1]=90;out.data[i+2]=45;
+    out.data[i+3]=Math.round(id.data[i]*.72);
+  }
+  mv.clearRect(0,0,S.W,S.H); mv.putImageData(out,0,0);
+}
+function maskHasWhite(){
+  if(!S.W)return false;
+  const d=mb.getImageData(0,0,S.W,S.H).data;
+  for(let i=0;i<d.length;i+=4*11){ if(d[i]>24) return true; }
+  return false;
+}
+
+/* ---------------------------------------------------------- 批注绘制 */
+function roundRect(c,x,y,w,h,r){
+  r=Math.min(r,w/2,h/2); c.beginPath(); c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+function fontOf(a){ return (a.italic?'italic ':'')+(a.bold?'bold ':'')+a.size+'px '+a.font; }
+function textBox(a){
+  ab.save(); ab.font=fontOf(a);
+  const lines=String(a.text||'').split('\n');
+  const tw=Math.max(40,...lines.map(l=>ab.measureText(l).width))+20;
+  const th=lines.length*a.size*1.42+16;
+  ab.restore();
+  return {w:a.w||tw,h:a.h||th,lines,lh:a.size*1.42};
+}
+function drawAnno(c,a){
+  c.save(); c.globalAlpha=a.opacity==null?1:a.opacity;
+  if(a.type==='text'){
+    const t=textBox(a);
+    if(a.bg){c.fillStyle=a.bg;roundRect(c,a.x,a.y,t.w,t.h,6);c.fill();
+      c.strokeStyle='rgba(0,0,0,.12)';c.lineWidth=1;c.stroke();}
+    c.font=fontOf(a); c.textBaseline='top'; c.fillStyle=a.color;
+    t.lines.forEach((l,i)=>c.fillText(l,a.x+10,a.y+8+i*t.lh));
+  }else if(a.type==='rect'||a.type==='ellipse'){
+    c.strokeStyle=a.color;c.lineWidth=a.stroke;c.fillStyle=a.bg||'rgba(0,0,0,0)';
+    if(a.type==='rect'){c.beginPath();c.rect(a.x,a.y,a.w,a.h);}else{
+      c.beginPath();c.ellipse(a.x+a.w/2,a.y+a.h/2,Math.max(1,a.w/2),Math.max(1,a.h/2),0,0,Math.PI*2);}
+    if(a.bg)c.fill(); c.stroke();
+  }else{ // line / arrow
+    const x2=a.x+a.w,y2=a.y+a.h;
+    c.strokeStyle=a.color;c.lineWidth=a.stroke;c.lineCap='round';
+    c.beginPath();c.moveTo(a.x,a.y);c.lineTo(x2,y2);c.stroke();
+    if(a.type==='arrow'){
+      const ang=Math.atan2(a.h,a.w), L=Math.max(12,a.stroke*4);
+      c.beginPath();c.moveTo(x2,y2);
+      c.lineTo(x2-L*Math.cos(ang-.42),y2-L*Math.sin(ang-.42));
+      c.moveTo(x2,y2);c.lineTo(x2-L*Math.cos(ang+.42),y2-L*Math.sin(ang+.42));c.stroke();
+    }
+  }
+  c.restore();
+}
+function bbox(a){ return a.type==='text'?{x:a.x,y:a.y,w:textBox(a).w,h:textBox(a).h}:a; }
+function redrawAnno(){
+  ab.clearRect(0,0,S.W||1,S.H||1); if(!S.W)return;
+  S.annos.forEach(a=>drawAnno(ab,a));
+  const a=S.annos.find(x=>x.id===S.sel);
+  if(a){
+    const b=bbox(a); ab.save(); ab.strokeStyle='#46624a';ab.lineWidth=Math.max(1,1.5/S.zoom);
+    ab.setLineDash([6,4]);ab.strokeRect(b.x-5,b.y-5,b.w+10,b.h+10);ab.setLineDash([]);
+    if(a.type!=='text'){ab.fillStyle='#46624a';ab.fillRect(b.x+b.w-4,b.y+b.h-4,10,10);}
+    ab.restore();
+  }
+}
+function pushUndo(){ S.undo.push(JSON.stringify(S.annos)); if(S.undo.length>40)S.undo.shift(); }
+function hit(p){
+  for(let i=S.annos.length-1;i>=0;i--){
+    const b=bbox(S.annos[i]);
+    if(p.x>=b.x-8&&p.x<=b.x+b.w+8&&p.y>=b.y-8&&p.y<=b.y+b.h+8) return S.annos[i];
+  }
+  return null;
+}
+function selectAnno(a){
+  S.sel=a?a.id:null; redrawAnno(); renderLayers();
+  if(a&&a.type==='text'){
+    $('annoText').value=a.text; $('font').value=a.font; $('size').value=a.size;
+    $('color').value=a.color; $('stroke').value=a.stroke;
+    $('bold').checked=!!a.bold; $('italic').checked=!!a.italic;
+    $('bgOn').checked=!!a.bg; if(a.bg)$('bg').value=a.bg;
+  }
+}
+function addAnno(a){ pushUndo(); a.id=S.nextId++; S.annos.push(a); selectAnno(a); return a; }
+function renderLayers(){
+  $('layerCount').textContent=S.annos.length?('· '+S.annos.length+' 个'):'';
+  const box=$('layers');
+  if(!S.annos.length){box.innerHTML='<div class="hint">还没有批注元素。</div>';return;}
+  box.innerHTML=S.annos.slice().reverse().map(a=>{
+    const names={text:'文字',arrow:'箭头',rect:'方框',ellipse:'椭圆框',line:'直线'};
+    const label=a.type==='text'?String(a.text||'').split('\n')[0].slice(0,14):names[a.type];
+    return '<div class="layer'+(a.id===S.sel?' on':'')+'" data-id="'+a.id+'"><i>'+esc(names[a.type])+'</i>'+
+           '<span class="n">'+esc(label||'—')+'</span><button class="btn sm" data-up="'+a.id+'">↑</button>'+
+           '<button class="btn sm" data-del="'+a.id+'">✕</button></div>';
+  }).join('');
+}
+function applyStyleToSel(){
+  const a=S.annos.find(x=>x.id===S.sel); if(!a)return;
+  const s=curStyle();
+  Object.assign(a,s);
+  if(a.type==='text'){a.w=null;a.h=null;}
+  redrawAnno(); renderLayers();
+}
+
+/* ---------------------------------------------------------- 指针交互 */
+const cw=$('cw');
+cw.addEventListener('pointerdown',e=>{
+  if(!S.W)return; e.preventDefault(); cw.setPointerCapture(e.pointerId);
+  const p=pos(e); S.drawing=true; S.start=p; S.last=p;
+  if(S.mode==='mask'){
+    if(S.mtool==='brush')paintLine(p,p);
+    else if(S.mtool==='eraser')eraseAt(p);
+    else if(S.mtool==='poly'){
+      S.poly.push(p); $('maskClose').disabled=false; ghostPreview(null,'poly');
+    }else if(S.mtool==='lasso'){S.lasso=[p];ghostPreview(p,'lasso');}
+  }else{
+    if(S.atool==='select'){
+      const a=hit(p);
+      if(a){
+        const b=bbox(a);
+        S.resizing=(a.type!=='text'&&p.x>b.x+b.w-12&&p.y>b.y+b.h-12);
+        selectAnno(a); S.offset={x:p.x-a.x,y:p.y-a.y};
+      }else selectAnno(null);
+    }else if(S.atool==='text'){
+      const s=curStyle();
+      addAnno(Object.assign({type:'text',x:p.x,y:p.y,w:null,h:null},s));
+      $('annoText').focus();
+    }
+  }
+});
+cw.addEventListener('pointermove',e=>{
+  if(!S.W)return; const p=pos(e);
+  $('cursorPos').textContent=Math.round(p.x)+', '+Math.round(p.y);
+  if(!S.drawing)return;
+  if(S.mode==='mask'){
+    if(S.mtool==='brush'){paintLine(S.last,p);S.last=p;}
+    else if(S.mtool==='eraser'){eraseAt(p);S.last=p;}
+    else if(S.mtool==='rect'||S.mtool==='ellipse')ghostPreview(p,S.mtool);
+    else if(S.mtool==='lasso'){S.lasso.push(p);ghostPreview(null,'lasso');}
+  }else{
+    if(S.atool==='select'&&S.sel){
+      const a=S.annos.find(x=>x.id===S.sel);
+      if(S.resizing){a.w=Math.max(12,p.x-a.x);a.h=Math.max(12,p.y-a.y);}
+      else{a.x=p.x-S.offset.x;a.y=p.y-S.offset.y;}
+      redrawAnno();
+    }else if(S.atool!=='select'&&S.atool!=='text')ghostPreview(p,S.atool);
+  }
+});
+function endPointer(e){
+  if(!S.drawing)return; S.drawing=false;
+  const p=pos(e);
+  if(S.mode==='mask'){
+    if(S.mtool==='rect'||S.mtool==='ellipse'){
+      if(S.start&&Math.hypot(p.x-S.start.x,p.y-S.start.y)>3)fillShape([S.start,p],S.mtool);
+      clearGhost();
+    }else if(S.mtool==='lasso'){
+      if(S.lasso.length>3)fillShape(S.lasso,'lasso');
+      S.lasso=[];clearGhost();
+    }
+  }else if(S.atool!=='select'&&S.atool!=='text'){
+    if(S.start&&Math.hypot(p.x-S.start.x,p.y-S.start.y)>4){
+      const s=curStyle();
+      addAnno(Object.assign({type:S.atool,x:S.start.x,y:S.start.y,w:p.x-S.start.x,h:p.y-S.start.y},s));
+    }
+    clearGhost();
+  }
+  redrawAnno(); renderLayers();
+}
+cw.addEventListener('pointerup',endPointer);
+cw.addEventListener('pointercancel',endPointer);
+cw.addEventListener('dblclick',e=>{ if(S.mode==='mask'&&S.mtool==='poly'&&S.poly.length>=3){e.preventDefault();closePoly();} });
+window.addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){
+    e.preventDefault(); if(S.undo.length){S.annos=JSON.parse(S.undo.pop());S.sel=null;redrawAnno();renderLayers();}return;
+  }
+  if((e.key==='Delete'||e.key==='Backspace')&&S.sel){
+    e.preventDefault(); pushUndo(); S.annos=S.annos.filter(a=>a.id!==S.sel); S.sel=null; redrawAnno(); renderLayers(); return;
+  }
+  if(e.key==='Escape'&&S.mode==='mask'&&S.poly.length){S.poly=[];clearGhost();$('maskClose').disabled=true;return;}
+  if(e.key.startsWith('Arrow')&&S.sel){
+    const a=S.annos.find(x=>x.id===S.sel),d=e.shiftKey?10:1;
+    e.preventDefault(); pushUndo();
+    if(e.key==='ArrowLeft')a.x-=d; if(e.key==='ArrowRight')a.x+=d;
+    if(e.key==='ArrowUp')a.y-=d; if(e.key==='ArrowDown')a.y+=d;
+    redrawAnno();
+  }
+});
+
+/* ---------------------------------------------------------- 模式 / 工具 */
+const MODE_TIP={
+  mask:'<b>只重画圈起来的地方</b>，圈外像素锁死。一次改一处，改完看一眼再改下一处。选区越贴合越好。',
+  anno:'<b>纯本地批注，不用 ComfyUI</b>。文字 / 箭头 / 框线直接叠在图上，字体字号颜色随调，最后导出 PNG。'
+};
+function setMode(m){
+  S.mode=m; $('maskSec').hidden=m!=='mask'; $('annoSec').hidden=m!=='anno';
+  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  $('modeTip').innerHTML=MODE_TIP[m];
+  S.tool=m==='mask'?S.mtool:S.atool;
+  $('toolNow').textContent=(m==='mask'?'选区 · ':'批注 · ')+toolLabel(S.tool);
+  clearGhost(); S.poly=[]; $('maskClose').disabled=true;
+  cw.style.cursor=m==='anno'&&S.atool==='select'?'default':'crosshair';
+}
+function toolLabel(t){return ({brush:'画笔',eraser:'橡皮',rect:'矩形/方框',ellipse:'椭圆',poly:'多边形',lasso:'自由套索',
+  select:'选择',text:'文字',arrow:'箭头',line:'直线'})[t]||t;}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$('maskTools').addEventListener('click',e=>{
+  const t=e.target.closest('[data-t]'); if(!t)return;
+  S.mtool=t.dataset.t;S.tool=S.mtool;
+  $('maskTools').querySelectorAll('.tool').forEach(x=>x.classList.toggle('on',x===t));
+  $('toolNow').textContent='选区 · '+toolLabel(S.mtool);
+  S.poly=[];S.lasso=[];clearGhost();$('maskClose').disabled=true;
+});
+$('annoTools').addEventListener('click',e=>{
+  const t=e.target.closest('[data-t]'); if(!t)return;
+  S.atool=t.dataset.t;S.tool=S.atool;
+  $('annoTools').querySelectorAll('.tool').forEach(x=>x.classList.toggle('on',x===t));
+  $('toolNow').textContent='批注 · '+toolLabel(S.atool);
+  cw.style.cursor=S.atool==='select'?'default':'crosshair';
+});
+$('brush').oninput=()=>$('brushV').textContent=$('brush').value;
+$('showMask').onchange=()=>$('cw').classList.toggle('hideMask',!$('showMask').checked);
+$('maskClear').onclick=maskClear;
+$('maskInvert').onclick=maskInvert;
+$('maskClose').onclick=closePoly;
+['font','size','stroke','color','bg','bold','italic','bgOn'].forEach(id=>$(id).onchange=applyStyleToSel);
+$('annoText').oninput=()=>{const a=S.annos.find(x=>x.id===S.sel);if(a&&a.type==='text'){a.text=$('annoText').value;a.w=null;a.h=null;redrawAnno();renderLayers();}};
+$('annoDel').onclick=()=>{if(!S.sel)return;pushUndo();S.annos=S.annos.filter(a=>a.id!==S.sel);S.sel=null;redrawAnno();renderLayers();};
+$('annoDup').onclick=()=>{const a=S.annos.find(x=>x.id===S.sel);if(!a)return;addAnno(Object.assign({},a,{x:a.x+18,y:a.y+18}));};
+$('annoClear').onclick=()=>{if(!S.annos.length)return;pushUndo();S.annos=[];S.sel=null;redrawAnno();renderLayers();};
+$('annoUndo').onclick=()=>{if(!S.undo.length)return;S.annos=JSON.parse(S.undo.pop());S.sel=null;redrawAnno();renderLayers();};
+$('layers').addEventListener('click',e=>{
+  const del=e.target.closest('[data-del]'), up=e.target.closest('[data-up]'), row=e.target.closest('[data-id]');
+  if(del){pushUndo();S.annos=S.annos.filter(a=>a.id!==+del.dataset.del);S.sel=null;redrawAnno();renderLayers();return;}
+  if(up){const i=S.annos.findIndex(a=>a.id===+up.dataset.up);if(i<S.annos.length-1){pushUndo();[S.annos[i],S.annos[i+1]]=[S.annos[i+1],S.annos[i]];redrawAnno();renderLayers();}return;}
+  if(row)selectAnno(S.annos.find(a=>a.id===+row.dataset.id));
+});
+
+/* ---------------------------------------------------------- 导出 / 重绘 */
+function composite(){
+  const c=document.createElement('canvas');c.width=S.W;c.height=S.H;
+  const x=c.getContext('2d'); x.drawImage(S.img,0,0,S.W,S.H);
+  S.annos.forEach(a=>drawAnno(x,a));
+  return c.toDataURL('image/png');
+}
+function saveImage(b64,kind,name){
+  return POST('/api/save_file',{b64:b64,kind:kind,name:name,project:$('project').value||null});
+}
+$('exportAnno').onclick=()=>{
+  if(!S.W)return note('先载入一张图','err');
+  saveImage(composite(),'annotate',S.name.replace(/\.[^.]+$/,'')+'_批注').then(d=>{
+    if(d.ok){S.lastSaved=d.path;note('批注图已保存：'+d.path+'（'+Math.round(d.size/1024)+' KB）','ok');}
+    else note(d.error||'保存失败','err');
+  }).catch(e=>note('保存失败：'+e,'err'));
+};
+$('annoToBoard').onclick=()=>{
+  if(!S.W)return;
+  saveImage(composite(),'annotate',S.name.replace(/\.[^.]+$/,'')+'_批注').then(d=>{
+    if(d.ok)location.href='/board.html?add='+encodeURIComponent(d.path);
+    else note(d.error||'保存失败','err');
+  });
+};
+$('runBtn').onclick=()=>{
+  if(!S.W)return note('先载入一张图','err');
+  if(!S.path)return note('这张图还没缓存到本机，等一秒再点；或重新拖一次','err');
+  if(!maskHasWhite())return note('还没圈出要重画的区域：用画笔 / 形状 / 套索涂一块','err');
+  const prompt=$('prompt').value.trim();
+  if(!prompt)return note('写一句「这里要变成什么」，别写「去掉什么」','err');
+  const body={chain:'inpaint',image_path:S.path,mask_b64:mbuf.toDataURL('image/png'),
+    filename:S.name,prompt:prompt,denoise:+$('denoise').value,tier:$('tier').value,
+    seed:$('seed').value?+$('seed').value:null,project:$('project').value||null};
+  $('runBtn').disabled=true;$('log').hidden=false;$('log').textContent='提交中…';
+  note('已提交，ComfyUI 正在跑…（8GB 显存，同一时刻只跑一张）');
+  POST('/api/render',body).then(d=>{
+    if(d.error){note(d.error,'err');$('runBtn').disabled=false;return;}
+    S.job=d.job;pollJob();
+  }).catch(e=>{note('提交失败：'+e,'err');$('runBtn').disabled=false;});
+};
+function pollJob(){
+  clearTimeout(S.poll);
+  S.poll=setTimeout(async()=>{
+    let d; try{d=await API('/api/job?id='+S.job);}catch(e){$('log').textContent='轮询失败：'+e;return pollJob();}
+    $('log').textContent=(d.log||[]).slice(-40).join('\n');
+    if(d.status==='running'||d.status==='queued')return pollJob();
+    $('runBtn').disabled=false;
+    if(d.error||d.status==='error'){
+      note(d.error||'出图失败，看右侧日志','err');
+      $('resBox').textContent=d.error||'失败';return;
+    }
+    S.result=d.files[d.files.length-1];
+    $('resImg').src='/api/file?path='+encodeURIComponent(S.result);$('resImg').hidden=false;
+    $('resKv').hidden=false;
+    $('k1').textContent=d.seconds?d.seconds+' 秒':'—';
+    $('k2').textContent=d.vram?d.vram+' GB':'—';
+    $('k3').textContent=d.size||'—';
+    $('resBox').textContent='改好了。区外像素保持原样，接缝明显就把 denoise 往下调再跑一次。';
+    ['useResult','resToBoard','resDel'].forEach(id=>$(id).disabled=false);
+    note('重绘完成：'+(d.seconds?d.seconds+' 秒 · 峰值显存 '+(d.vram||'—')+' GB':'完成'),'ok');
+  },900);
+}
+$('useResult').onclick=()=>{
+  if(!S.result)return;
+  loadPath(S.result); maskClear(); S.result=null;
+  ['useResult','resToBoard','resDel'].forEach(id=>$(id).disabled=true);
+  $('resImg').hidden=true;$('resKv').hidden=true;
+  note('已把重绘结果设为新底图，可以接着改下一处。','ok');
+};
+$('resToBoard').onclick=()=>{ if(S.result)location.href='/board.html?add='+encodeURIComponent(S.result); };
+$('resDel').onclick=()=>{
+  if(!S.result||!confirm('删掉这张重绘图？连同 .meta.json / 闸门记录一起清，不可恢复。'))return;
+  POST('/api/delete',{paths:[S.result]}).then(d=>{
+    note(d&&d.error?d.error:'已删除','ok'); S.result=null;
+    $('resImg').hidden=true;$('resKv').hidden=true;
+    ['useResult','resToBoard','resDel'].forEach(id=>$(id).disabled=true);
+  });
+};
+
+/* ---------------------------------------------------------- 杂项 */
+$('fitBtn').onclick=fitWidth;
+$('origBtn').onclick=()=>{S.zoom=1;applyZoom();};
+$('pickFile').onclick=()=>$('file').click();
+$('file').onchange=e=>{if(e.target.files[0])readLocal(e.target.files[0]);};
+$('revealBtn').onclick=()=>{if(S.path)API('/api/reveal?path='+encodeURIComponent(S.path));};
+const stage=$('stage');
+['dragenter','dragover'].forEach(t=>stage.addEventListener(t,e=>{e.preventDefault();stage.classList.add('hot');}));
+['dragleave','drop'].forEach(t=>stage.addEventListener(t,e=>{e.preventDefault();stage.classList.remove('hot');}));
+stage.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readLocal(f);});
+$('libLoad').onclick=()=>{const p=$('libPick').value;if(p)loadPath(p,$('libPick').selectedOptions[0].textContent.split(' · ')[0]);};
+function fillLib(items,kw){
+  const sel=$('libPick'),cur=sel.value;
+  const list=items.filter(it=>!kw||it.name.toLowerCase().includes(kw)).slice(0,400);
+  sel.innerHTML=list.length?list.map(it=>'<option value="'+esc(it.path)+'">'+esc(it.name)+' · '+esc(it.chain_label||'')+'</option>').join(''):'<option value="">没有匹配的图</option>';
+  if(list.some(x=>x.path===cur))sel.value=cur;
+}
+$('libSearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('libLoad').click();});
+
+/* ---------------------------------------------------------- 启动 */
+(async function init(){
+  setMode('mask');
+  const [st,fo,lib]=await Promise.all([
+    state(), API('/api/fonts').catch(()=>({fonts:[]})), API('/api/outputs?all=1').catch(()=>({items:[]}))
+  ]);
+  S.fonts=(fo.fonts||[]).filter(f=>f.installed);
+  if(!S.fonts.length)S.fonts=fo.fonts||[];
+  const fsel=$('font'); fsel.innerHTML='';
+  S.fonts.forEach(f=>{const o=document.createElement('option');o.value=f.family;o.textContent=f.name+(f.installed?'':'（未安装·会回退）');fsel.appendChild(o);});
+  if(!S.fonts.length){const o=document.createElement('option');o.value='"Microsoft YaHei",sans-serif';o.textContent='微软雅黑';fsel.appendChild(o);}
+  S.libItems=lib.items||[]; fillLib(S.libItems,'');
+  $('libSearch').oninput=()=>fillLib(S.libItems,$('libSearch').value.trim().toLowerCase());
+  const q=new URLSearchParams(location.search);
+  if(q.get('path'))loadPath(q.get('path'));
+  else if(q.get('add'))loadPath(q.get('add'));
+  window.addEventListener('resize',()=>{if(S.W&&S.zoom<1)fitWidth();});
+})();
+</script>
+</body>
+</html>

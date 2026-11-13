@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "ipadapter",
+ "api": "ipadapter_api.json",
+ "label": "风格参考（IPAdapter 抄参考图风格）",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "same composition and content as input, style transferred from reference image, high detail",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.75,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

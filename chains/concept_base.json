@@ -1,0 +1,18 @@
+{
+  "skill": "comfy-render",
+  "chain": "concept_base",
+  "api": "concept_base_api.json",
+  "label": "概念底稿·线稿+提示词",
+  "category": "方案表达",
+  "technical": false,
+  "needs_image": true,
+  "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+  "preset_prompt": "best quality, high detail, long horizontal pergola with slender columns and a flat roof beam, bamboo and wood, glass, human eye level view, snow-capped mountains, grass lawn and stone paved plaza, modern minimalist landscape architecture, sunny day, warm sunlight, soft shadows, natural green and warm beige tones, calm inviting atmosphere, architectural rendering, v-ray, realism, 35mm lens",
+  "style_tail": "best quality, high detail, human eye level view, sunny day, warm sunlight, soft shadows, natural green and warm beige tones, calm inviting atmosphere, architectural rendering, v-ray, realism, 35mm lens",
+  "negative_extra": "distorted geometry, duplicated buildings, warped lines, oversaturated, cartoon, plastic look, extra columns, floating objects, sketch, line drawing",
+  "denoise_default": 1.0,
+  "timeout": 900,
+  "retries": 2,
+  "poll_interval": 1.5,
+  "out_subdir": "出图/AI方案稿"
+}

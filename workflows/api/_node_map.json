@@ -1,0 +1,1729 @@
+{
+ "color_plan_api.json": {
+  "file": "color_plan_api.json",
+  "label": "彩平（CAD 线稿上色）",
+  "tool": "plan",
+  "domain": "land",
+  "preset": "masterplan",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [
+   [
+    "canny",
+    0.8
+   ]
+  ],
+  "cn_end": 0.9,
+  "edge": "canny",
+  "canny": [
+   100,
+   200
+  ],
+  "output_size": "由输入图决定（长边 1024）",
+  "long_side": 1024,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "perspective_api.json": {
+  "file": "perspective_api.json",
+  "label": "效果图（SU/白模截图转写实）",
+  "tool": "su",
+  "domain": "land",
+  "preset": "perspective",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.9,
+  "cn": [
+   [
+    "depth",
+    0.5
+   ],
+   [
+    "lineart",
+    0.55
+   ]
+  ],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "section_perspective_api.json": {
+  "file": "section_perspective_api.json",
+  "label": "剖透视（剖面填色）",
+  "tool": "section",
+  "domain": "arch",
+  "preset": "arch_section",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.4,
+  "cn": [
+   [
+    "canny",
+    0.8
+   ]
+  ],
+  "cn_end": 1.0,
+  "edge": "canny",
+  "canny": [
+   50,
+   140
+  ],
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "analysis_diagram_api.json": {
+  "file": "analysis_diagram_api.json",
+  "label": "分析图（图解风格）",
+  "tool": "diagram",
+  "domain": "arch",
+  "preset": "arch_diagram",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.55,
+  "cn": [
+   [
+    "lineart",
+    0.5
+   ]
+  ],
+  "cn_end": 0.9,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "board_hero_api.json": {
+  "file": "board_hero_api.json",
+  "label": "展板主图（无输入，纯文生图）",
+  "tool": "text2img",
+  "domain": "land",
+  "preset": "free",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": [
+   1536,
+   1024
+  ],
+  "long_side": null,
+  "nodes": 7,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "5",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "5",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "5",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "7",
+    "field": "filename_prefix"
+   },
+   "size": {
+    "node": "4",
+    "fields": [
+     "width",
+     "height"
+    ]
+   }
+  }
+ },
+ "sketch_api.json": {
+  "file": "sketch_api.json",
+  "label": "草图 / 白模渲染",
+  "tool": "sketch",
+  "domain": "land",
+  "preset": "perspective",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.78,
+  "cn": [
+   [
+    "depth",
+    0.45
+   ],
+   [
+    "lineart",
+    0.45
+   ]
+  ],
+  "cn_end": 0.75,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "relight_api.json": {
+  "file": "relight_api.json",
+  "label": "日夜 / 季节 / 氛围",
+  "tool": "relight",
+  "domain": "land",
+  "preset": "perspective",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.6,
+  "cn": [
+   [
+    "depth",
+    0.4
+   ]
+  ],
+  "cn_end": 0.6,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "aerial_api.json": {
+  "file": "aerial_api.json",
+  "label": "总平转鸟瞰（实验）",
+  "tool": "aerial",
+  "domain": "land",
+  "preset": "aerial",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.8,
+  "cn": [
+   [
+    "lineart",
+    0.35
+   ]
+  ],
+  "cn_end": 0.5,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1024）",
+  "long_side": 1024,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "style_api.json": {
+  "file": "style_api.json",
+  "label": "分析图 / 插画风",
+  "tool": "style",
+  "domain": "land",
+  "preset": "analysis",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.78,
+  "cn": [
+   [
+    "lineart",
+    0.45
+   ]
+  ],
+  "cn_end": 0.6,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "planting_api.json": {
+  "file": "planting_api.json",
+  "label": "种植意向图",
+  "tool": "planting",
+  "domain": "land",
+  "preset": "land_planting",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.65,
+  "cn": [
+   [
+    "lineart",
+    0.45
+   ]
+  ],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "sitediag_api.json": {
+  "file": "sitediag_api.json",
+  "label": "现状分析图",
+  "tool": "sitediag",
+  "domain": "land",
+  "preset": "land_site",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.55,
+  "cn": [
+   [
+    "lineart",
+    0.4
+   ]
+  ],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "plan_arch_api.json": {
+  "file": "plan_arch_api.json",
+  "label": "建筑总平彩图",
+  "tool": "plan_arch",
+  "domain": "arch",
+  "preset": "arch_plan",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.52,
+  "cn": [
+   [
+    "canny",
+    0.78
+   ]
+  ],
+  "cn_end": 0.95,
+  "edge": "canny",
+  "canny": [
+   60,
+   170
+  ],
+  "output_size": "由输入图决定（长边 1024）",
+  "long_side": 1024,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "facade_api.json": {
+  "file": "facade_api.json",
+  "label": "建筑立面表现",
+  "tool": "facade",
+  "domain": "arch",
+  "preset": "arch_facade",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.42,
+  "cn": [
+   [
+    "canny",
+    0.78
+   ]
+  ],
+  "cn_end": 1.0,
+  "edge": "canny",
+  "canny": [
+   50,
+   140
+  ],
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "interior_api.json": {
+  "file": "interior_api.json",
+  "label": "室内空间效果",
+  "tool": "interior",
+  "domain": "arch",
+  "preset": "arch_interior",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.55,
+  "cn": [
+   [
+    "depth",
+    0.5
+   ],
+   [
+    "lineart",
+    0.45
+   ]
+  ],
+  "cn_end": 0.9,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "axon_api.json": {
+  "file": "axon_api.json",
+  "label": "轴测表现",
+  "tool": "axon",
+  "domain": "arch",
+  "preset": "arch_axon",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.5,
+  "cn": [
+   [
+    "lineart",
+    0.65
+   ]
+  ],
+  "cn_end": 0.95,
+  "edge": "canny",
+  "canny": [
+   50,
+   150
+  ],
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "exploded_api.json": {
+  "file": "exploded_api.json",
+  "label": "爆炸图 / 分层轴测",
+  "tool": "exploded",
+  "domain": "arch",
+  "preset": "arch_exploded",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.56,
+  "cn": [
+   [
+    "lineart",
+    0.6
+   ]
+  ],
+  "cn_end": 0.95,
+  "edge": "canny",
+  "canny": [
+   50,
+   150
+  ],
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "massing_api.json": {
+  "file": "massing_api.json",
+  "label": "体块推敲",
+  "tool": "massing",
+  "domain": "arch",
+  "preset": "arch_massing",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.7,
+  "cn": [
+   [
+    "depth",
+    0.45
+   ],
+   [
+    "lineart",
+    0.45
+   ]
+  ],
+  "cn_end": 0.8,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1024）",
+  "long_side": 1024,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "material_api.json": {
+  "file": "material_api.json",
+  "label": "材质替换",
+  "tool": "material",
+  "domain": "arch",
+  "preset": "arch_material",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.52,
+  "cn": [
+   [
+    "lineart",
+    0.55
+   ]
+  ],
+  "cn_end": 0.9,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "renov_api.json": {
+  "file": "renov_api.json",
+  "label": "改造 / 现状更新",
+  "tool": "renov",
+  "domain": "arch",
+  "preset": "arch_renov",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.6,
+  "cn": [
+   [
+    "depth",
+    0.45
+   ]
+  ],
+  "cn_end": 0.85,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1216）",
+  "long_side": 1216,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "inpaint_api.json": {
+  "file": "inpaint_api.json",
+  "label": "局部改图（遮罩重绘）",
+  "tool": "inpaint",
+  "domain": "land",
+  "preset": "inpaint",
+  "steps": 28,
+  "cfg": 6.5,
+  "denoise": 1.0,
+  "output_size": "由输入图决定（长边 1536），未遮罩区像素级保留",
+  "long_side": 1536,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "8",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "8",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "8",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "10",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   },
+   "mask": {
+    "node": "5",
+    "field": "image"
+   }
+  }
+ },
+ "enhance_api.json": {
+  "file": "enhance_api.json",
+  "label": "放大 / 洗图（原尺寸洗，再 lanczos 到 2K）",
+  "tool": "enhance",
+  "domain": "land",
+  "preset": "free",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.2,
+  "output_size": "洗图在原图尺寸做，再按比例 lanczos 到长边 2048；出 _upscaled 与 _refined 两张",
+  "long_side": null,
+  "nodes": 11,
+  "node_map": {
+   "positive": {
+    "node": "5",
+    "field": "text"
+   },
+   "negative": {
+    "node": "6",
+    "field": "text"
+   },
+   "seed": {
+    "node": "8",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "8",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "8",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "10",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "2",
+    "field": "image"
+   },
+   "scale_to": {
+    "nodes": [
+     "3",
+     "11"
+    ],
+    "fields": [
+     "width",
+     "height"
+    ],
+    "target": 2048
+   }
+  },
+  "save_labels": {
+   "4": "upscaled",
+   "10": "refined"
+  },
+  "drop_if_no_denoise": [
+   "10"
+  ]
+ },
+ "multiangle_api.json": {
+  "file": "multiangle_api.json",
+  "label": "多角度（实验，从一张图推另一个视角）",
+  "tool": "multiangle",
+  "domain": "land",
+  "preset": "perspective",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.65,
+  "cn": [
+   [
+    "depth",
+    0.4
+   ],
+   [
+    "lineart",
+    0.4
+   ]
+  ],
+  "cn_end": 0.7,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "ipadapter_api.json": {
+  "file": "ipadapter_api.json",
+  "label": "风格参考（IPAdapter 抄参考图风格）",
+  "tool": "ipadapter",
+  "domain": "land",
+  "preset": "perspective",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.75,
+  "style_weight": 0.65,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 19,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "17",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "17",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "17",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "19",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "7",
+    "field": "image"
+   },
+   "style_image": {
+    "node": "4",
+    "field": "image"
+   },
+   "style_weight": {
+    "node": "6",
+    "field": "weight"
+   }
+  }
+ },
+ "perspective_lora_api.json": {
+  "file": "perspective_lora_api.json",
+  "label": "效果图 + 四合院建筑 LoRA",
+  "tool": "su",
+  "domain": "land",
+  "preset": "perspective_lora",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.9,
+  "cn": [
+   [
+    "depth",
+    0.5
+   ],
+   [
+    "lineart",
+    0.55
+   ]
+  ],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 17,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  },
+  "lora": {
+   "node": "17",
+   "name": "sdxl_architecture_siheyuan.safetensors",
+   "strength_model": 0.65,
+   "strength_clip": 0.65
+  }
+ },
+ "watercolor_api.json": {
+  "file": "watercolor_api.json",
+  "label": "水彩风格化（scribble 控制网）",
+  "tool": "su",
+  "domain": "land",
+  "preset": "watercolor",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 0.9,
+  "cn": [
+   [
+    "scribble",
+    0.5
+   ],
+   [
+    "scribble",
+    0.55
+   ]
+  ],
+  "cn_end": 0.7,
+  "edge": "scribble",
+  "canny": null,
+  "output_size": "由输入图决定（长边 1152）",
+  "long_side": 1152,
+  "nodes": 16,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "14",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "14",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "14",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "16",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "interior_t2i_api.json": {
+  "file": "interior_t2i_api.json",
+  "label": "文生图·室内场景",
+  "tool": "text2img",
+  "domain": "land",
+  "preset": "interior_t2i",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": [
+   1536,
+   1024
+  ],
+  "long_side": null,
+  "nodes": 7,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "5",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "5",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "5",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "7",
+    "field": "filename_prefix"
+   },
+   "size": {
+    "node": "4",
+    "fields": [
+     "width",
+     "height"
+    ]
+   }
+  }
+ },
+ "nature_t2i_api.json": {
+  "file": "nature_t2i_api.json",
+  "label": "文生图·自然风景",
+  "tool": "text2img",
+  "domain": "land",
+  "preset": "nature_t2i",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [],
+  "cn_end": 0.7,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": [
+   1536,
+   1024
+  ],
+  "long_side": null,
+  "nodes": 7,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "5",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "5",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "5",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "7",
+    "field": "filename_prefix"
+   },
+   "size": {
+    "node": "4",
+    "fields": [
+     "width",
+     "height"
+    ]
+   }
+  }
+ },
+ "outpaint_api.json": {
+  "file": "outpaint_api.json",
+  "label": "一键扩图（四边外扩 200px）",
+  "tool": "su",
+  "domain": "land",
+  "preset": "outpaint",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [],
+  "cn_end": 1.0,
+  "edge": null,
+  "canny": null,
+  "output_size": "底图缩 0.48 后四边各扩 200px",
+  "nodes": 10,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "8",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "8",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "8",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "10",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "sansan_plan_api.json": {
+  "file": "sansan_plan_api.json",
+  "label": "平面方案上色·叁十三（canny+union+LoRA）",
+  "tool": "cad",
+  "domain": "land",
+  "preset": "sansan_plan",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [
+   [
+    "canny",
+    0.8
+   ]
+  ],
+  "cn_end": 0.9,
+  "edge": "canny",
+  "canny": [
+   100,
+   200
+  ],
+  "output_size": "由输入图决定（长边 1024）",
+  "long_side": 1024,
+  "nodes": 11,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  },
+  "lora": {
+   "node": "5",
+   "name": "sansan_plan_XL_v1.safetensors",
+   "strength_model": 0.5,
+   "strength_clip": 0.5
+  }
+ },
+ "concept_sketch_api.json": {
+  "file": "concept_sketch_api.json",
+  "label": "概念草图（一句话→草图底稿）",
+  "tool": "text2img",
+  "domain": "land",
+  "preset": "masterplan",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [],
+  "cn_end": 0.7,
+  "edge": null,
+  "canny": null,
+  "output_size": [
+   1536,
+   1024
+  ],
+  "long_side": null,
+  "nodes": 7,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "5",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "5",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "5",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "7",
+    "field": "filename_prefix"
+   }
+  }
+ },
+ "plan_to_mass_api.json": {
+  "file": "plan_to_mass_api.json",
+  "label": "平面图→3D白模（等轴测白色体块）",
+  "tool": "plan",
+  "domain": "land",
+  "preset": "masterplan",
+  "steps": 20,
+  "cfg": 7.0,
+  "denoise": 1.0,
+  "cn": [
+   [
+    "canny",
+    0.9
+   ]
+  ],
+  "cn_end": 0.85,
+  "edge": "canny",
+  "canny": [
+   100,
+   200
+  ],
+  "output_size": [
+   1024,
+   1024
+  ],
+  "long_side": 1024,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ },
+ "concept_base_api.json": {
+  "file": "concept_base_api.json",
+  "label": "概念底稿·线稿+提示词（Lineart 单控制网）",
+  "tool": "sketch",
+  "domain": "land",
+  "preset": "masterplan",
+  "steps": 20,
+  "cfg": 6.0,
+  "denoise": 1.0,
+  "cn": [
+   [
+    "lineart",
+    0.75
+   ]
+  ],
+  "cn_end": 0.8,
+  "edge": "lineart",
+  "canny": null,
+  "output_size": [
+   1024,
+   640
+  ],
+  "long_side": 1024,
+  "nodes": 12,
+  "node_map": {
+   "positive": {
+    "node": "2",
+    "field": "text"
+   },
+   "negative": {
+    "node": "3",
+    "field": "text"
+   },
+   "seed": {
+    "node": "10",
+    "field": "seed"
+   },
+   "steps": {
+    "node": "10",
+    "field": "steps"
+   },
+   "denoise": {
+    "node": "10",
+    "field": "denoise"
+   },
+   "save_prefix": {
+    "node": "12",
+    "field": "filename_prefix"
+   },
+   "image": {
+    "node": "4",
+    "field": "image"
+   }
+  }
+ }
+}

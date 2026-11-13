@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "analysis_diagram",
+ "api": "analysis_diagram_api.json",
+ "label": "分析图（图解风格）",
+ "category": "技术图",
+ "technical": true,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "architecture analysis diagram, flat illustration style, clean vector look, soft colors, high quality",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.55,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

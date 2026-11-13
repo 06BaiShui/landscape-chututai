@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "nature_t2i",
+ "api": "nature_t2i_api.json",
+ "category": "通用",
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿",
+ "label": "文生图·自然风景",
+ "needs_image": false,
+ "technical": false,
+ "denoise_default": 1.0,
+ "preset_prompt": "a view of a river flowing through a lush forest, dark green water with ripples, tall grass in the foreground, cloudy day, eye-level shot, photorealistic, high detail",
+ "style_tail": "landscape photography, natural light, high detail"
+}

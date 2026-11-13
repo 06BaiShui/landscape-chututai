@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "style",
+ "api": "style_api.json",
+ "label": "分析图 / 插画风",
+ "category": "技术图",
+ "technical": true,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "illustration style analysis drawing, watercolor texture, hand drawn look",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.78,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

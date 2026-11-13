@@ -1,0 +1,28 @@
+{
+ "skill": "comfy-render",
+ "chain": "perspective_lora",
+ "api": "perspective_lora_api.json",
+ "label": "效果图 + 四合院建筑 LoRA",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "long_side": 1152,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "landscape architecture perspective, chinese courtyard, siheyuan, timber pavilion, grey tile roof, bluestone paving, courtyard trees, dusk, warm light, realistic render, architectural visualization, high detail",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.78,
+ "denoise_range": [
+  0.55,
+  0.9
+ ],
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿",
+ "lora": {
+  "name": "sdxl_architecture_siheyuan.safetensors",
+  "strength_model": 0.65,
+  "strength_clip": 0.65
+ }
+}

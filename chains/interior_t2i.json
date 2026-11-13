@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "interior_t2i",
+ "api": "interior_t2i_api.json",
+ "category": "通用",
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿",
+ "label": "文生图·室内场景",
+ "needs_image": false,
+ "technical": false,
+ "denoise_default": 1.0,
+ "preset_prompt": "indoor scene, bright interior with plants, sunlight casting shadows on walls and floor, windows showing outdoor greenery, minimalist, photorealistic, high detail",
+ "style_tail": "photorealistic interior photography, soft natural light, high detail"
+}

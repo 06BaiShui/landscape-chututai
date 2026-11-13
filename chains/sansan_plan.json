@@ -1,0 +1,22 @@
+{
+ "skill": "comfy-render",
+ "chain": "sansan_plan",
+ "api": "sansan_plan_api.json",
+ "label": "平面方案上色（叁十三 LoRA）",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "long_side": 1024,
+ "preset_prompt": "SSS_landscape_plan, landscape architecture master plan, tree, grass, from above, path, ground, watercolor, top view",
+ "style_tail": "",
+ "negative_extra": "text, watermark, blurry, low quality, frame, border",
+ "denoise_default": 1.0,
+ "denoise_range": [
+  0.6,
+  1.0
+ ],
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

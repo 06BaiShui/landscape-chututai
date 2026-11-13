@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "plan_arch",
+ "api": "plan_arch_api.json",
+ "label": "建筑总平彩图",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "architectural site plan color rendering, roof texture, landscape surroundings, high quality",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 0.52,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

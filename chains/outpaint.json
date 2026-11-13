@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "outpaint",
+ "api": "outpaint_api.json",
+ "category": "通用",
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿",
+ "label": "一键扩图（四边外扩）",
+ "needs_image": true,
+ "technical": false,
+ "denoise_default": 1.0,
+ "preset_prompt": "seamless extension of the input scene, matching perspective and lighting, realistic render, high detail",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail"
+}

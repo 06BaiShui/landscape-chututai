@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "color_plan",
+ "api": "color_plan_api.json",
+ "label": "彩平（CAD 线稿上色）",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "master plan color rendering, landscape plan, clean color blocks, high quality",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 1.0,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

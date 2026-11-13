@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "inpaint",
+ "api": "inpaint_api.json",
+ "label": "局部改图（遮罩重绘）",
+ "category": "通用",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "seamless edit inside the mask only, realistic render, high detail",
+ "style_tail": "realistic render, architectural visualization, soft shadows, high detail",
+ "negative_extra": "extra structures, floating objects, duplicated elements",
+ "denoise_default": 1.0,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}

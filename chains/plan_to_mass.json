@@ -1,0 +1,18 @@
+{
+ "skill": "comfy-render",
+ "chain": "plan_to_mass",
+ "api": "plan_to_mass_api.json",
+ "label": "平面图 → 3D 白模",
+ "category": "方案表达",
+ "technical": false,
+ "needs_image": true,
+ "model": "Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+ "preset_prompt": "isometric 3D axonometric view of floor plan, white clay render, minimalist white architectural model, no texture, no color, soft ambient light, pure white walls, white floor, extruded white volumes, building footprints raised into solid blocks, spherical tree canopies, visible 3D height, physical model on a square base plate, 45 degree top-down angle, architectural visualization, clean background, high detail",
+ "style_tail": "isometric axonometric 3D white clay model, extruded volumes, raised solid blocks, spherical tree canopies, physical model on base plate, clean white background, no color, no texture",
+ "negative_extra": "extra structures, duplicated elements, floating objects",
+ "denoise_default": 1.0,
+ "timeout": 900,
+ "retries": 2,
+ "poll_interval": 1.5,
+ "out_subdir": "出图/AI方案稿"
+}
