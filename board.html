@@ -314,7 +314,15 @@ const TPLS = [
   {id:'three',name:'三栏并列',desc:'标题 + 三等分图 + 图注'},
   {id:'grid',name:'四宫格',desc:'标题 + 2×2 图 + 底部说明'},
   {id:'pair',name:'左右双拼',desc:'两张大图 + 底部文字带'},
-  {id:'minimal',name:'极简留白',desc:'小标题 + 一张大图 + 一行说明'}
+  {id:'minimal',name:'极简留白',desc:'小标题 + 一张大图 + 一行说明'},
+  {id:'threepart',name:'三段叙事式',desc:'上平面 / 中分析 / 下鸟瞰，讲故事最顺（竞赛常用）'},
+  {id:'twothird',name:'2/3 大图式',desc:'左侧大图占 2/3，右侧信息栏，视觉冲击强'},
+  {id:'halfstory',name:'1/2 均分式',desc:'左右各一半大图，适合对比或前后故事线'},
+  {id:'cshape',name:'C 字环绕式',desc:'主图临边，其余图围绕，适合小体量方案'},
+  {id:'maggrid',name:'网格杂志式',desc:'3×2 分析图网格 + 底部说明，排逻辑序列'},
+  {id:'tshape',name:'T 字形',desc:'顶部横幅大图 + 底部三栏，适合横长的总平/立剖'},
+  {id:'centerplan',name:'总平中心式',desc:'总平放大居中做视觉中心，四角小图环绕'},
+  {id:'fullbleed',name:'压底大图式',desc:'效果图满版铺底，天空水面延伸做背景，顶部排分析'}
 ];
 
 const B = {
@@ -370,6 +378,96 @@ function applyTpl(id){
     I(M,gy,gw,gh);I(M+gw+20,gy,gw,gh);
     R(M,H-M-108,W-2*M,2,'#d8ded6');
     T(M,H-M-92,W-2*M,72,'设计说明 / DESIGN NOTES　·　现状与策略　·　节点与材料',20,'#7c8176','left');
+  }else if(id==='threepart'){
+    /* 三段叙事式：上平面 / 中分析 / 下鸟瞰（竞赛展板最常见的讲故事顺序） */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, g=18;
+    const th=(BH-2*g)*0.40, mh=(BH-2*g)*0.27, bh2=(BH-2*g)*0.33;
+    I(M,gy,W-2*M,th);
+    T(M,gy+th+6,W-2*M,28,'01 总平面图 / MASTER PLAN',17,'#7c8176','left');
+    const my=gy+th+g+34, mw=(W-2*M-3*g)/4;
+    for(let i=0;i<4;i++){I(M+i*(mw+g),my,mw,mh);T(M+i*(mw+g),my+mh+6,mw,26,'0'+(i+2)+' 分析',16,'#7c8176','left');}
+    const by=my+mh+g+32;
+    I(M,by,W-2*M,BH-(by-gy));
+    T(M,by+6,W-2*M,26,'鸟瞰 / 效果图',16,'#7c8176','right');
+  }else if(id==='twothird'){
+    /* 2/3 大图式：左侧大图压阵，右侧信息栏（竞赛投稿高频版式） */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, lw=(W-2*M)*0.63;
+    I(M,gy,lw,BH);
+    const rx=M+lw+18, rw=(W-2*M)-lw-18;
+    T(rx,gy,rw,34,'设计亮点 / HIGHLIGHTS',22,'#23281f','left');
+    const ih=(BH-140-16)/2;
+    I(rx,gy+44,rw,ih); I(rx,gy+44+ih+16,rw,ih);
+    T(rx,gy+44+2*ih+30,rw,80,'策略说明 · 材料与节点 · 技术经济指标',18,'#7c8176','left');
+  }else if(id==='halfstory'){
+    /* 1/2 均分式：左右各半，各自成故事（适合改造前后 / 两方案对比） */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, gw=(W-2*M-24)/2;
+    I(M,gy,gw,BH*0.60); I(M+gw+24,gy,gw,BH*0.60);
+    T(M,gy+BH*0.60+10,gw,32,'左：改造前 / 现状',19,'#23281f','left');
+    T(M+gw+24,gy+BH*0.60+10,gw,32,'右：改造后 / 方案',19,'#23281f','left');
+    T(M,gy+BH*0.60+52,W-2*M,BH-(BH*0.60+52),'两侧各配 2–3 行说明，信息量均等，形成完整故事线 / A vs B',18,'#7c8176','left');
+  }else if(id==='cshape'){
+    /* C 字环绕式：主图临左上两边，其余图沿右、下两侧环绕 */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, g=18;
+    const mw=(W-2*M)*0.60, mh=BH*0.58;
+    I(M,gy,mw,mh);
+    const rw=W-2*M-mw-g;
+    I(M+mw+g,gy,rw,(mh-g)/2); I(M+mw+g,gy+(mh-g)/2+g,rw,(mh-g)/2);
+    T(M+mw+g,gy+mh-30,rw,26,'主图：小场景效果 / 总平',15,'#7c8176','right');
+    const by=gy+mh+g, bw=(mw-2*g)/3;
+    for(let i=0;i<3;i++)I(M+i*(bw+g),by,bw,BH-(by-gy));
+    T(M+mw+g,by+8,rw,BH-(by-gy)-16,'设计说明：概念 · 策略 · 指标',18,'#7c8176','left');
+  }else if(id==='maggrid'){
+    /* 网格杂志式：3×2 分析图网格，底部说明带留白 */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / 设计生成逻辑',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, gh=(BH-110-2*18)/2, gw=(W-2*M-2*18)/3;
+    for(let r=0;r<2;r++)for(let c=0;c<3;c++){
+      I(M+c*(gw+18),gy+r*(gh+18+42),gw,gh);
+      T(M+c*(gw+18),gy+r*(gh+18+42)+gh+8,gw,26,'0'+(r*3+c+1)+' 场地 / 概念 / 策略',15,'#7c8176','left');
+    }
+    T(M,H-M-58,W-2*M,44,'设计说明 / DESIGN NOTES　·　分析图多时用这张，注意留白控制浓淡',18,'#7c8176','left');
+  }else if(id==='tshape'){
+    /* T 字形：顶部横幅大图（横梁）+ 底部三栏（竖笔），适合横长的总平/立剖 */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, g=18;
+    const bh=BH*0.46;
+    I(M,gy,W-2*M,bh);
+    T(M,gy+bh+6,W-2*M,26,'总平面 / 长卷式效果 / 立面',15,'#7c8176','right');
+    const by=gy+bh+g+32, bw=(W-2*M-2*g)/3, bhh=BH-(by-gy);
+    I(M,by,bw,bhh); I(M+bw+g,by,bw,bhh);
+    T(M+2*(bw+g),by+8,bw,bhh-16,'第三栏放说明文字：节点 · 材料 · 指标',18,'#7c8176','left');
+  }else if(id==='centerplan'){
+    /* 总平中心式：总平放大居中做视觉中心，四角小图环绕 */
+    R(M,M,W-2*M,8,'#46624a');
+    T(M,M+22,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    const gy=M+124, BH=H-gy-M, g=18;
+    const cw=(W-2*M)*0.52, ch=BH*0.62;
+    const cx=M+((W-2*M)-cw)/2, cy=gy+(BH-ch)/2;
+    const sw2=(W-2*M-cw-g)/2, sh2=BH*0.28;
+    I(M,gy,sw2,sh2); I(M,gy+BH-sh2,sw2,sh2);
+    I(cx+cw+g,gy,sw2,sh2); I(cx+cw+g,gy+BH-sh2,sw2,sh2);
+    I(cx,cy,cw,ch);
+    T(cx,cy+ch+6,cw,28,'总平面放大 / MASTER PLAN',17,'#23281f','center');
+    T(M,gy+sh2+8,sw2,24,'区位 / 现状',14,'#7c8176','left');
+    T(cx+cw+g,gy+sh2+8,sw2,24,'节点 / 剖面',14,'#7c8176','left');
+  }else if(id==='fullbleed'){
+    /* 压底大图式：效果图满版铺底，天空/水面延伸做背景，顶部排分析与标题 */
+    T(M,M+16,W-2*M,76,'项目标题 / PROJECT TITLE',48,'#23281f','left');
+    T(M,M+92,W-2*M,30,'概念 · 场地 · 策略一行说明',18,'#7c8176','left');
+    const iy=Math.round(H*0.40);
+    I(0,iy,W,H-iy);
+    const sw=(W-2*M-2*18)/3, sh=Math.min(150,iy-M-150);
+    for(let i=0;i<3;i++)I(M+i*(sw+18),iy-sh-14,sw,sh);
+    T(0,H-46,W,32,'压底大图选带天空/草地/水面的图，边缘自然融出 / KEY RENDER',15,'#e8e6dd','right');
   }else{
     T(M,M+20,W-2*M,70,'项目标题',42,'#23281f','left');
     T(M,M+88,W-2*M,30,'SUBTITLE / 概念与场地',18,'#7c8176','left');
