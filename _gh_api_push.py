@@ -12,7 +12,7 @@ import sys
 import time
 import urllib.request
 
-REPO = sys.argv[1]          # 06BaiShui/chutai
+REPO = sys.argv[1]          # 06BaiShui/landscape-chututai
 BRANCH = sys.argv[2]        # main
 MESSAGE = sys.argv[3]
 API = "https://api.github.com"
