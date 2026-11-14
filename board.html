@@ -114,6 +114,40 @@
     cursor:pointer;background:#fcfcfa;word-break:break-all}
   .boardItem:hover{border-color:var(--accent-2);background:var(--soft)}
   #file{display:none}
+  /* ---------- 参考抽屉（别人的展板 / 分析图） ---------- */
+  #refMask{position:fixed;inset:0;background:rgba(30,35,25,.32);z-index:60;display:none}
+  #refMask.on{display:block}
+  #refSide{position:fixed;top:0;right:-440px;bottom:0;width:420px;background:var(--card);z-index:61;
+    box-shadow:-14px 0 36px rgba(30,35,25,.16);transition:right .22s;display:flex;flex-direction:column}
+  #refSide.on{right:0}
+  #refSide .rhead{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  #refSide .rhead b{font-size:13px}
+  #refSide .rbody{flex:1;overflow:auto;padding:12px 14px 18px}
+  .rgroup{font-size:11px;font-weight:600;color:#8b927f;letter-spacing:.08em;margin:14px 0 6px}
+  .plat2{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);
+    border-radius:10px;margin-bottom:6px;text-decoration:none;color:inherit;background:#fcfcfa;transition:.14s}
+  .plat2:hover{border-color:var(--accent-2);background:var(--soft)}
+  .plat2 .n{font-weight:600;font-size:12.5px}
+  .plat2 .d{font-size:11px;color:var(--muted);line-height:1.5}
+  .lic{flex:none;font-size:10px;padding:2px 7px;border-radius:999px;margin-top:2px}
+  .lic.ok{background:#e4f0e4;color:#3d7a49}
+  .lic.part{background:#f7ecd8;color:#9c7426}
+  .rcats{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+  .rcats button{border:1px solid var(--line);background:#fcfcfa;border-radius:999px;padding:4px 10px;
+    font:inherit;font-size:11px;cursor:pointer;color:var(--muted)}
+  .rcats button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  #refGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .rcard{margin:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;cursor:zoom-in;background:#fcfcfa}
+  .rcard:hover{border-color:var(--accent-2)}
+  .rcard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+  .rcard figcaption{font-size:10px;color:var(--muted);padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #lightbox{position:fixed;inset:0;background:rgba(22,26,19,.88);z-index:70;display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:12px}
+  #lightbox.on{display:flex}
+  #lightbox img{max-width:92vw;max-height:74vh;object-fit:contain;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  #lightbox .lbbar{display:flex;gap:8px}
+  #lightbox .lbbar .btn{background:rgba(255,255,255,.94)}
+  #lbName{color:#dfe4da;font-size:12px}
 </style>
 </head>
 <body>
@@ -144,6 +178,7 @@
       <input type="text" id="assetSearch" placeholder="搜成果库文件名 / 类别" style="margin-top:8px">
       <div id="assets" class="assets"><div class="hint">载入成果库中…</div></div>
       <div class="hint">点一下素材：<b>优先填进画布里的空图槽</b>，没空槽就新加一张。也可以直接从资源管理器把图片拖进画布。</div>
+      <div class="row" style="margin-top:9px"><button class="btn grow" id="refBtn">📐 参考：别人的展板 / 分析图</button></div>
     </div>
 
     <div class="sec">
@@ -292,6 +327,32 @@
         展板成果落「出图/展板」，不进 AI 方案稿，不会被成果库当成 AI 出图统计。</div>
     </div>
   </aside>
+</div>
+
+<!-- ================= 参考抽屉：别人的展板 / 分析图 ================= -->
+<div id="refMask"></div>
+<aside id="refSide">
+  <div class="rhead"><b>📐 参考：别人的展板 / 分析图</b><span class="spacer"></span>
+    <button class="btn sm" id="refRefresh">刷新</button>
+    <button class="btn sm" id="refClose">✕</button></div>
+  <div class="rbody">
+    <div class="rgroup">案例平台（点开官网看获奖图纸与分析图）</div>
+    <div id="refPlats"></div>
+    <div class="rgroup">我的参考图库</div>
+    <div class="hint" style="margin:0 0 2px">分类文件夹在 <b id="refRoot2">—</b>，把收集的展板/分析图截图丢进去，点「刷新」。</div>
+    <div class="rcats" id="refCats"></div>
+    <div id="refGrid"><div class="hint">载入中…</div></div>
+    <div class="hint">点缩略图放大研究；看中版式可「垫到画布底层」，半透明照着排，排完删掉即可。</div>
+  </div>
+</aside>
+<div id="lightbox">
+  <img id="lbImg" alt="">
+  <div id="lbName"></div>
+  <div class="lbbar">
+    <button class="btn pri" id="lbUnder">垫到画布底层（半透明）</button>
+    <button class="btn" id="lbReveal">打开原图位置</button>
+    <button class="btn" id="lbClose">关闭</button>
+  </div>
 </div>
 
 <script>
@@ -869,7 +930,79 @@ $('revealBtn').onclick=()=>{
   API('/api/open_dir?path='+encodeURIComponent(B.lastSaved)).catch(()=>{});
 };
 
+/* ====================================== 参考抽屉：别人的展板 / 分析图 */
+const REF_PLATS = [
+  {c:'获奖展板 · 竞赛风向标',items:[
+    {n:'ASLA Awards',u:'https://www.asla.org/awards/',d:'美国景观师协会年度奖，分析与规划类展板是分析图范本，配评委点评',t:'ok'},
+    {n:'WLA Awards',u:'https://worldlandscapearchitect.com/',d:'世界景观建筑奖，学生与专业赛道获奖图纸全公开',t:'ok'},
+    {n:'IFLA 学生竞赛',u:'https://www.iflaworld.com/',d:'国际景观师联合会，年年新题，全球尖子同场竞技',t:'ok'},
+    {n:'LILA 国际景观奖',u:'https://landezine-award.com/',d:'Landezine 评奖，建成项目图文齐全',t:'ok'},
+    {n:'Bustler',u:'https://bustler.net/',d:'建筑竞赛聚合：获奖名单 + 设计流程图纸',t:'ok'}]},
+  {c:'项目案例 · 分析图',items:[
+    {n:'谷德设计网 gooood',u:'https://www.gooood.cn/',d:'国内最全项目库，分析图+实景双语，ASLA 得主常带完整图纸',t:'ok'},
+    {n:'木藕设计网 Mooool',u:'https://mooool.com/',d:'景观垂直站，国外经典项目的分析图文很密',t:'ok'},
+    {n:'Landezine',u:'https://landezine.com/',d:'全球建成景观图库，按公园/滨水/广场场景搜',t:'ok'},
+    {n:'ArchDaily 景观',u:'https://www.archdaily.com/search/projects/categories/landscape',d:'平面/剖面/节点大样全阶段图纸，每个项目图最全',t:'ok'}]},
+  {c:'作品集 · 版式灵感',items:[
+    {n:'Issuu',u:'https://issuu.com/',d:'搜 "Landscape Portfolio" + 院校缩写，名校作品集版式',t:'ok'},
+    {n:'Behance',u:'https://www.behance.net/',d:'搜 "Landscape competition"，拼贴与排版灵感海量',t:'ok'},
+    {n:'Architizer',u:'https://architizer.com/',d:'全球最大建筑社区，方案图纸丰富，访问稍慢',t:'part'}]}
+];
+let refCat='', refRoot='', lbPath='';
+
+function renderRefPlats(){
+  $('refPlats').innerHTML=REF_PLATS.map(g=>
+    '<div class="rgroup" style="margin-top:10px">'+esc(g.c)+'</div>'+
+    g.items.map(p=>'<a class="plat2" href="'+p.u+'" target="_blank" rel="noopener">'+
+      '<div class="grow"><div class="n">'+esc(p.n)+'</div><div class="d">'+esc(p.d)+'</div></div>'+
+      '<span class="lic '+(p.t||'ok')+'">'+(p.t==='part'?'有条件':'免费')+'</span></a>').join('')
+  ).join('');
+}
+function refLoad(){
+  fetch('/api/refs/list'+(refCat?'?cat='+encodeURIComponent(refCat):''))
+    .then(r=>r.json()).then(d=>{
+      refRoot=d.root; $('refRoot2').textContent=d.root;
+      $('refCats').innerHTML=d.cats.map(c=>'<button data-c="'+esc(c)+'"'+(c===refCat?' class="on"':'')+'>'+esc(c)+'</button>').join('');
+      $('refGrid').innerHTML=d.count
+        ? d.items.map(it=>'<figure class="rcard" data-p="'+esc(it.path)+'" title="'+esc(it.name)+'">'+
+            '<img loading="lazy" src="/api/refs/thumb?path='+encodeURIComponent(it.path)+'" alt="">'+
+            '<figcaption>'+esc(it.name.replace(/\.[^.]+$/,''))+'</figcaption></figure>').join('')
+        : '<div class="hint" style="grid-column:1/-1">参考图库还是空的。从上面平台把喜欢的获奖展板、分析图截图/下载，放进 <b>'+esc(d.root)+'</b> 对应分类文件夹，再点「刷新」。</div>';
+    })
+    .catch(()=>{$('refGrid').innerHTML='<div class="hint" style="grid-column:1/-1">连不上出图台，关掉黑窗口重新双击启动。</div>'});
+}
+$('refCats').onclick=e=>{const c=e.target.dataset.c;if(c==null)return;refCat=(c===refCat?'':c);refLoad();};
+$('refGrid').onclick=e=>{const f=e.target.closest('.rcard');if(f)openLight(f.dataset.p,f.querySelector('figcaption').textContent);};
+
+function openLight(p,name){
+  lbPath=p;
+  $('lbImg').src='/api/file?path='+encodeURIComponent(p);
+  $('lbName').textContent=name||'';
+  $('lightbox').classList.add('on');
+}
+function closeLight(){$('lightbox').classList.remove('on');$('lbImg').src='';lbPath='';}
+$('lbClose').onclick=closeLight;
+$('lightbox').onclick=e=>{if(e.target.id==='lightbox')closeLight();};
+$('lbReveal').onclick=()=>{if(lbPath)fetch('/api/reveal?path='+encodeURIComponent(lbPath));};
+$('lbUnder').onclick=()=>{
+  if(!lbPath)return;
+  snapshot();
+  B.els.unshift({id:eid(),type:'image',x:0,y:0,w:B.w,h:B.h,path:lbPath,fit:'contain',
+                 opacity:0.38,rot:0,lock:false,hide:false,name:'参考底图'});
+  B.sel=null;render();closeLight();
+  note('参考图已垫到画布底层（38% 不透明度），照着排；排完在图层面板删掉它即可。','ok');
+};
+
+function openRef(){renderRefPlats();refLoad();$('refSide').classList.add('on');$('refMask').classList.add('on');}
+function closeRef(){$('refSide').classList.remove('on');$('refMask').classList.remove('on');}
+$('refBtn').onclick=openRef;
+$('refRefresh').onclick=refLoad;
+$('refClose').onclick=closeRef;
+$('refMask').onclick=closeRef;
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLight();closeRef();}});
+
 /* ---------------------------------------------------------- 素材 / 存档列表 */
+
 let LIB=[];
 function renderAssets(kw){
   const box=$('assets');

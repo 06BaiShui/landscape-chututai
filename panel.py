@@ -116,23 +116,41 @@ ASSET_DIR = (os.environ.get("CHUTAI_ASSETS")
 ASSET_CATS = ["01_人物配景", "02_植物配景", "03_贴图纹理", "04_天空背景",
               "05_图标矢量", "06_参考意向", "99_未分类"]
 
+# 参考图库根目录（别人的展板 / 分析图，供排版时垫底参考）：环境变量 > D:\workplace\参考图库 > 仓库内
+_DEF_REFS = r"D:\workplace\参考图库"
+REF_DIR = (os.environ.get("CHUTAI_REFS")
+           if os.environ.get("CHUTAI_REFS")
+           else (_DEF_REFS if os.path.isdir(r"D:\workplace")
+                 else os.path.join(HERE, "参考图库")))
+REF_CATS = ["01_获奖展板", "02_分析图", "03_排版版式", "04_效果与意向", "99_未分类"]
 
-def asset_safe(path):
-    """素材文件白名单：只允许 ASSET_DIR 里的图片。"""
+
+def _rooted(path, root):
+    """文件白名单：只允许 root 目录里的真实文件。"""
     try:
         p = os.path.abspath(path)
-        return p if p.lower().startswith(os.path.abspath(ASSET_DIR).lower()) \
+        return p if p.lower().startswith(os.path.abspath(root).lower()) \
             and os.path.isfile(p) else None
     except Exception:
         return None
 
 
+def asset_safe(path):
+    """素材文件白名单：只允许 ASSET_DIR 里的图片。"""
+    return _rooted(path, ASSET_DIR)
+
+
+def ref_safe(path):
+    """参考图白名单：只允许 REF_DIR 里的图片。"""
+    return _rooted(path, REF_DIR)
+
+
 _ASSET_THUMBS = {}
 
 
-def asset_thumb(path, width=280):
+def asset_thumb(path, width=280, root=None):
     from PIL import Image
-    ap = asset_safe(path)
+    ap = _rooted(path, root or ASSET_DIR)
     if not ap:
         return None
     try:
@@ -155,18 +173,19 @@ def asset_thumb(path, width=280):
     return data
 
 
-def asset_list(cat=None):
-    """列素材；cat 为子目录名，空则扫全部分类。首次访问自动建分类目录。"""
-    os.makedirs(ASSET_DIR, exist_ok=True)
-    for c in ASSET_CATS:
-        try:
-            os.makedirs(os.path.join(ASSET_DIR, c), exist_ok=True)
-        except Exception:
-            pass
-    dirs = [cat] if cat else sorted(os.listdir(ASSET_DIR))
+def _list_dir_images(root, cats, cat=None, ensure=True):
+    """列 root 下各分类目录里的图片；cat 为子目录名，空则扫全部分类。"""
+    if ensure:
+        os.makedirs(root, exist_ok=True)
+        for c in cats:
+            try:
+                os.makedirs(os.path.join(root, c), exist_ok=True)
+            except Exception:
+                pass
+    dirs = [cat] if cat else sorted(os.listdir(root))
     out = []
     for d in dirs:
-        full = os.path.join(ASSET_DIR, d)
+        full = os.path.join(root, d)
         if not os.path.isdir(full) or d.startswith((".", "_")):
             continue
         for name in sorted(os.listdir(full)):
@@ -174,10 +193,23 @@ def asset_list(cat=None):
             if os.path.isfile(p) and name.lower().endswith(IMG_EXT):
                 out.append({"path": p, "name": name, "cat": d,
                             "size": os.path.getsize(p)})
-    cats = sorted(x for x in os.listdir(ASSET_DIR)
-                  if os.path.isdir(os.path.join(ASSET_DIR, x))
-                  and not x.startswith((".", "_")))
-    return {"root": ASSET_DIR, "cats": cats, "items": out, "count": len(out)}
+    try:
+        cats_now = sorted(x for x in os.listdir(root)
+                          if os.path.isdir(os.path.join(root, x))
+                          and not x.startswith((".", "_")))
+    except OSError:
+        cats_now = []
+    return {"root": root, "cats": cats_now, "items": out, "count": len(out)}
+
+
+def asset_list(cat=None):
+    """列素材；首次访问自动建分类目录。"""
+    return _list_dir_images(ASSET_DIR, ASSET_CATS, cat)
+
+
+def ref_list(cat=None):
+    """列参考图库（别人的展板/分析图）；首次访问自动建分类目录。"""
+    return _list_dir_images(REF_DIR, REF_CATS, cat)
 
 # 批注 / 展板用的常用字体。installed 由 /api/fonts 扫系统字体目录实测，
 # 没装的字体会被前端标灰但仍可选（浏览器会回退到系统默认，不会乱码）。
@@ -404,10 +436,14 @@ def new_job(params):
 # ---------------------------------------------------------------- HTTP
 
 def safe_file(path):
-    """只允许读 D:\\workplace 下的文件，避免这个端口变成任意文件下载器。"""
+    """只允许读 D:\\workplace / 素材库 / 参考图库 下的文件，避免这个端口变成任意文件下载器。"""
     try:
         p = os.path.abspath(path)
-        return p if p.lower().startswith(os.path.abspath(r"D:\workplace").lower()) and os.path.isfile(p) else None
+        pl = p.lower()
+        for root in (r"D:\workplace", ASSET_DIR, REF_DIR):
+            if pl.startswith(os.path.abspath(root).lower()):
+                return p if os.path.isfile(p) else None
+        return None
     except Exception:
         return None
 
@@ -561,6 +597,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(asset_list((q.get("cat") or [""])[0] or None))
         if u.path == "/api/assets/thumb":
             data = asset_thumb((q.get("path") or [""])[0])
+            if not data:
+                return self._send(404, "not found")
+            return self._send(200, data, "image/jpeg")
+        if u.path == "/api/refs/list":
+            return self._json(ref_list((q.get("cat") or [""])[0] or None))
+        if u.path == "/api/refs/thumb":
+            data = asset_thumb((q.get("path") or [""])[0], root=REF_DIR)
             if not data:
                 return self._send(404, "not found")
             return self._send(200, data, "image/jpeg")
