@@ -12,6 +12,7 @@
 """
 
 import base64
+import io
 import json
 import mimetypes
 import os
@@ -104,6 +105,79 @@ COMFY = "http://127.0.0.1:8188"
 IMG_EXT = (".png", ".jpg", ".jpeg", ".webp", ".bmp")
 BOARD_DIRNAME = os.path.join("出图", "展板")   # 项目内展板成果，不含「AI方案稿」→ 不进成果库统计
 BOARD_FALLBACK = os.path.join(PROJECTS_ROOT, "_展板")  # 没选项目时的公共展板目录
+
+# 素材库根目录：环境变量 > D:\workplace\素材库 > 仓库内 素材库/
+# （D 盘在就直接用，目录首次访问时自动创建；朋友的机器没有 D:\workplace 则用仓库内）
+_DEF_ASSETS = r"D:\workplace\素材库"
+ASSET_DIR = (os.environ.get("CHUTAI_ASSETS")
+             if os.environ.get("CHUTAI_ASSETS")
+             else (_DEF_ASSETS if os.path.isdir(r"D:\workplace")
+                   else os.path.join(HERE, "素材库")))
+ASSET_CATS = ["01_人物配景", "02_植物配景", "03_贴图纹理", "04_天空背景",
+              "05_图标矢量", "06_参考意向", "99_未分类"]
+
+
+def asset_safe(path):
+    """素材文件白名单：只允许 ASSET_DIR 里的图片。"""
+    try:
+        p = os.path.abspath(path)
+        return p if p.lower().startswith(os.path.abspath(ASSET_DIR).lower()) \
+            and os.path.isfile(p) else None
+    except Exception:
+        return None
+
+
+_ASSET_THUMBS = {}
+
+
+def asset_thumb(path, width=280):
+    from PIL import Image
+    ap = asset_safe(path)
+    if not ap:
+        return None
+    try:
+        key = (ap, os.path.getmtime(ap), width)
+    except OSError:
+        return None
+    if key in _ASSET_THUMBS:
+        return _ASSET_THUMBS[key]
+    try:
+        im = Image.open(ap).convert("RGB")
+        im.thumbnail((width, width), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=80)
+        data = buf.getvalue()
+    except Exception:
+        return None
+    if len(_ASSET_THUMBS) > 400:
+        _ASSET_THUMBS.clear()
+    _ASSET_THUMBS[key] = data
+    return data
+
+
+def asset_list(cat=None):
+    """列素材；cat 为子目录名，空则扫全部分类。首次访问自动建分类目录。"""
+    os.makedirs(ASSET_DIR, exist_ok=True)
+    for c in ASSET_CATS:
+        try:
+            os.makedirs(os.path.join(ASSET_DIR, c), exist_ok=True)
+        except Exception:
+            pass
+    dirs = [cat] if cat else sorted(os.listdir(ASSET_DIR))
+    out = []
+    for d in dirs:
+        full = os.path.join(ASSET_DIR, d)
+        if not os.path.isdir(full) or d.startswith((".", "_")):
+            continue
+        for name in sorted(os.listdir(full)):
+            p = os.path.join(full, name)
+            if os.path.isfile(p) and name.lower().endswith(IMG_EXT):
+                out.append({"path": p, "name": name, "cat": d,
+                            "size": os.path.getsize(p)})
+    cats = sorted(x for x in os.listdir(ASSET_DIR)
+                  if os.path.isdir(os.path.join(ASSET_DIR, x))
+                  and not x.startswith((".", "_")))
+    return {"root": ASSET_DIR, "cats": cats, "items": out, "count": len(out)}
 
 # 批注 / 展板用的常用字体。installed 由 /api/fonts 扫系统字体目录实测，
 # 没装的字体会被前端标灰但仍可选（浏览器会回退到系统默认，不会乱码）。
@@ -477,12 +551,19 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(500, "缺少 ui.html")
             with open(p, "rb") as f:
                 return self._send(200, f.read(), "text/html; charset=utf-8")
-        if u.path in ("/editor.html", "/board.html"):
+        if u.path in ("/editor.html", "/board.html", "/assets.html"):
             p = os.path.join(HERE, u.path.lstrip("/"))
             if not os.path.isfile(p):
                 return self._send(500, "缺少 %s" % u.path.lstrip("/"))
             with open(p, "rb") as f:
                 return self._send(200, f.read(), "text/html; charset=utf-8")
+        if u.path == "/api/assets/list":
+            return self._json(asset_list((q.get("cat") or [""])[0] or None))
+        if u.path == "/api/assets/thumb":
+            data = asset_thumb((q.get("path") or [""])[0])
+            if not data:
+                return self._send(404, "not found")
+            return self._send(200, data, "image/jpeg")
         if u.path == "/api/fonts":
             return self._json(scan_fonts())
         if u.path == "/api/board/list":

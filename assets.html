@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>素材库 · 出图台</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --paper:#f6f5f1; --card:#fff; --ink:#23281f; --muted:#7c8176;
+    --line:#e3e0d7; --accent:#46624a; --accent-2:#5d7f61; --soft:#ebf0ea;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font:14px/1.55 "Microsoft YaHei","PingFang SC",sans-serif}
+  header{display:flex;align-items:center;gap:12px;padding:10px 18px;
+    background:rgba(255,255,255,.85);border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:30;backdrop-filter:blur(8px)}
+  header h1{font-size:15px;font-weight:700}
+  .nav{display:flex;gap:4px}
+  .nav a{padding:5px 12px;border-radius:7px;font-size:12px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .nav a.on{background:var(--soft);font-weight:700}
+  .nav a:hover{background:var(--soft)}
+  .hint{font-size:12px;color:var(--muted)}
+  main{max-width:1500px;margin:0 auto;padding:16px 18px 60px;
+    display:grid;grid-template-columns:minmax(380px,1fr) minmax(420px,1.15fr);gap:16px}
+  @media (max-width:1100px){main{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .ph{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .ph b{font-size:13.5px}
+  .ph .hint{margin-left:auto}
+  .pb{padding:12px 14px;max-height:calc(100vh - 130px);overflow:auto}
+  /* 平台导航 */
+  .cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .cats button{border:1px solid var(--line);background:#fcfcfa;color:var(--accent);
+    border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;cursor:pointer}
+  .cats button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .plat{display:block;border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+    margin-bottom:8px;text-decoration:none;color:var(--ink);background:#fcfcfa}
+  .plat:hover{border-color:var(--accent-2);background:var(--soft)}
+  .plat .r1{display:flex;align-items:center;gap:8px}
+  .plat b{font-size:13px}
+  .lic{font-size:10.5px;padding:1px 7px;border-radius:999px;white-space:nowrap;font-weight:700}
+  .lic.ok{background:#e3efdd;color:#2f6b3a}
+  .lic.attr{background:#faf0d3;color:#8a6d1a}
+  .lic.part{background:#faf0d3;color:#8a6d1a}
+  .lic.warn{background:#f9e3de;color:#a04a35}
+  .plat .d{font-size:12px;color:var(--muted);margin-top:2px}
+  .plat .u{font-size:11px;color:var(--accent-2);word-break:break-all}
+  /* 本地素材 */
+  .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  select,input[type=text]{border:1px solid var(--line);border-radius:8px;padding:6px 9px;
+    font:inherit;font-size:12.5px;color:var(--ink);background:#fcfcfa;outline:none}
+  input[type=text]:focus,select:focus{border-color:var(--accent-2);background:#fff}
+  .btn{border:1px solid var(--line);background:#fcfcfa;color:var(--accent);border-radius:8px;
+    padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:var(--accent-2);background:var(--soft)}
+  .agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .acard{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fcfcfa}
+  .acard .im{height:110px;background:
+    repeating-conic-gradient(#f1efe8 0 25%,#fff 0 50%) 0 0/16px 16px;
+    display:flex;align-items:center;justify-content:center}
+  .acard img{max-width:100%;max-height:100%;object-fit:contain;cursor:pointer}
+  .acard .nm{padding:6px 8px 2px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acard .ct{padding:0 8px 4px;font-size:10.5px;color:var(--muted)}
+  .acard .ops{display:flex;border-top:1px solid var(--line)}
+  .acard .ops button{flex:1;border:0;background:none;font:inherit;font-size:11px;
+    color:var(--accent);padding:5px 0;cursor:pointer}
+  .acard .ops button:hover{background:var(--soft)}
+  .acard .ops button+button{border-left:1px solid var(--line)}
+  .empty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+  .msg{font-size:12px;color:var(--accent-2);min-height:18px;padding:0 2px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🗃 素材库</h1>
+  <nav class="nav">
+    <a href="/">出图台</a><a href="/editor.html">编辑台</a>
+    <a href="/board.html">展板台</a><a href="/assets.html" class="on">素材库</a>
+  </nav>
+  <span class="hint">可靠平台导航 + 本地素材收纳，全部离线可用</span>
+</header>
+<main>
+  <section class="panel">
+    <div class="ph"><b>🌐 可靠平台导航</b>
+      <span class="hint">已核授权类型 · 使用前以官网条款为准</span></div>
+    <div class="pb">
+      <div class="cats" id="pcats"></div>
+      <input type="text" id="psearch" placeholder="搜平台名或用途，如：人物 / 贴图 / 字体…" style="width:100%;margin-bottom:10px">
+      <div id="plist"></div>
+      <div class="hint" style="margin-top:8px">部分站点需代理；免费≠随便商用，接项目前按「授权」标签核对。</div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="ph"><b>📁 本地素材收纳</b><span class="hint" id="aroot"></span></div>
+    <div class="pb">
+      <div class="tools">
+        <select id="acat" style="min-width:150px"></select>
+        <input type="text" id="asearch" placeholder="搜文件名…" style="width:160px">
+        <button class="btn" id="arefresh">刷新</button>
+        <button class="btn" id="aopen">打开文件夹</button>
+      </div>
+      <div class="msg" id="amsg">点素材图上的按钮直接送展板台 / 编辑台。</div>
+      <div class="agrid" id="agrid"></div>
+      <div class="empty" id="aempty" hidden>这个分类还没有素材。把下载的图放进对应文件夹后点「刷新」。</div>
+    </div>
+  </section>
+</main>
+<script>
+/* ================= 平台导航（2026-11 网络调研核验版） ================= */
+const PLATS=[
+ // 摄影图库
+ {c:'摄影图库',n:'Pexels',u:'https://www.pexels.com/zh-cn/',lic:'免费可商用 · 免署名',k:'ok',
+  d:'高清摄影+视频，支持中文搜索，质感好，效果图配景与意向图首选'},
+ {c:'摄影图库',n:'Unsplash',u:'https://unsplash.com/',lic:'免费可商用 · Unsplash License',k:'ok',
+  d:'艺术感强，氛围意向、品牌调性图多，分辨率高可印刷'},
+ {c:'摄影图库',n:'Pixabay',u:'https://pixabay.com/',lic:'免费可商用 · 免署名',k:'ok',
+  d:'480 万+资源，含插画/矢量/视频，数量最大但易撞图'},
+ // 贴图 PBR
+ {c:'贴图 PBR',n:'Poly Haven',u:'https://polyhaven.com/',lic:'CC0 · 完全免费',k:'ok',
+  d:'HDRI 环境光 + 无缝 PBR 材质 + 3D 模型，无需注册直接下，渲染必备'},
+ {c:'贴图 PBR',n:'ambientCG',u:'https://ambientcg.com/',lic:'CC0 · 完全免费',k:'ok',
+  d:'上千种无缝 PBR 材质，最高 8K，铺装/木材/混凝土全'},
+ {c:'贴图 PBR',n:'Architextures',u:'https://architextures.org/',lic:'免费 · 建筑材质',k:'ok',
+  d:'按材料/表面分类的高清贴图，还能在线生成无缝材质'},
+ {c:'贴图 PBR',n:'Textures.com',u:'https://www.textures.com/',lic:'部分免费 · 每日限量',k:'part',
+  d:'13 万+张老牌贴图库，彩平铺装、立面材质常用，免费额度每天几张'},
+ // 人物与配景
+ {c:'人物与配景',n:'SKalgubbar',u:'https://skalgubbar.se/',lic:'免费 · 仅限渲染用途',k:'part',
+  d:'效果图/立面/剖面人物免抠原图，尺度准确，禁止原样再分发'},
+ {c:'人物与配景',n:'PimpMyDrawing',u:'https://pimpmydrawing.com/',lic:'免费 · 线稿',k:'ok',
+  d:'干净的人物植物线稿矢量，分析图和剖立面填充'},
+ {c:'人物与配景',n:'VIShopper',u:'https://www.vishopper.com/',lic:'部分免费 · PSD 分层',k:'part',
+  d:'人物/植物/地面/天空全 PSD 且阴影分好图层，后期拼贴神器'},
+ {c:'人物与配景',n:'Tonytextures',u:'https://www.tonytextures.com/',lic:'免费包可商用',k:'ok',
+  d:'剪影树、抽象人物、天空背景、无缝贴图，官方声明免费包可商用'},
+ {c:'人物与配景',n:'MRCUTOUT',u:'https://www.mrcutout.com/',lic:'部分免费',k:'part',
+  d:'免抠素材分类全，边缘干净，部分收费'},
+ // PNG 免抠
+ {c:'PNG 免抠',n:'pngimg.com',u:'https://pngimg.com/',lic:'看协议 · 个人用途',k:'warn',
+  d:'海量 PNG 免抠，接项目商用前须单独确认授权'},
+ {c:'PNG 免抠',n:'StickPNG',u:'https://www.stickpng.com/',lic:'看协议 · 个人用途',k:'warn',
+  d:'趣味 PNG 免抠图库，商用同样要逐张确认'},
+ // 3D 模型
+ {c:'3D 模型',n:'Sketchfab',u:'https://sketchfab.com/',lic:'按模型 CC 授权筛选',k:'part',
+  d:'全球最大 3D 模型平台，下载前筛「Downloadable + CC 授权」'},
+ {c:'3D 模型',n:'3D Warehouse',u:'https://3dwarehouse.sketchup.com/',lic:'看单个模型授权',k:'part',
+  d:'SketchUp 官方模型库，景观小品/家具/植物多，质量良莠不齐'},
+ {c:'3D 模型',n:'Poly Haven 模型',u:'https://polyhaven.com/models',lic:'CC0 · 完全免费',k:'ok',
+  d:'少量但精的 CC0 模型，家具与配景可放心用'},
+ // 图标与矢量
+ {c:'图标与矢量',n:'iconfont 阿里图标',u:'https://www.iconfont.cn/',lic:'看单个图标授权',k:'part',
+  d:'中文最全矢量图标库，分析图箭头/符号必备，逐个看授权'},
+ {c:'图标与矢量',n:'iconmonstr',u:'https://iconmonstr.com/',lic:'免费可商用',k:'ok',
+  d:'极简线性图标，风格统一，免署名'},
+ {c:'图标与矢量',n:'unDraw',u:'https://undraw.co/',lic:'开源 · 可改色',k:'ok',
+  d:'SVG 插画一键换主题色，汇报 PPT 与展板装饰'},
+ // 字体
+ {c:'字体',n:'猫啃网',u:'https://www.maokenziti.com/',lic:'免费商用字体导航',k:'ok',
+  d:'免费商用中文字体聚合站，每个字体标明授权，选展板标题字'},
+ {c:'字体',n:'Google Fonts',u:'https://fonts.google.com/',lic:'OFL 开源',k:'ok',
+  d:'思源黑体/宋体等开源字体的官方源，展板正文与标题都安全'},
+ // 配色
+ {c:'配色',n:'Adobe Color',u:'https://color.adobe.com/zh/create',lic:'免费工具',k:'ok',
+  d:'从图片提取配色、查色彩和谐规则，定展板主色调'},
+ {c:'配色',n:'Coolors',u:'https://coolors.co/',lic:'免费工具',k:'ok',
+  d:'快速生成与锁定配色方案，导出色卡'}
+];
+const PCATS=['全部',...new Set(PLATS.map(p=>p.c))];
+let pcat='全部';
+function renderPlats(){
+  const kw=$id('psearch').value.trim().toLowerCase();
+  const list=PLATS.filter(p=>(pcat==='全部'||p.c===pcat)&&
+    (!kw||(p.n+p.d+p.c).toLowerCase().includes(kw)));
+  $id('plist').innerHTML=list.map(p=>
+    '<a class="plat" href="'+p.u+'" target="_blank" rel="noopener">'+
+    '<span class="r1"><b>'+p.n+'</b><span class="lic '+p.k+'">'+p.lic+'</span></span>'+
+    '<span class="d">'+p.d+'</span><span class="u">'+p.u.replace('https://','')+'</span></a>'
+  ).join('')||'<div class="empty">没有匹配的平台。</div>';
+}
+function $id(x){return document.getElementById(x)}
+$id('pcats').innerHTML=PCATS.map(c=>'<button data-c="'+c+'"'+(c===pcat?' class="on"':'')+'>'+c+'</button>').join('');
+$id('pcats').onclick=e=>{if(e.target.dataset.c){pcat=e.target.dataset.c;
+  document.querySelectorAll('#pcats button').forEach(b=>b.className=b.dataset.c===pcat?'on':'');renderPlats();}};
+$id('psearch').oninput=renderPlats;
+renderPlats();
+
+/* ================= 本地素材收纳 ================= */
+let ACAT='';
+async function loadCats(){
+  const d=await (await fetch('/api/assets/list')).json();
+  $id('aroot').textContent=d.root;
+  $id('acat').innerHTML='<option value="">全部分类</option>'+
+    d.cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  ACAT='';
+}
+async function loadAssets(){
+  const kw=$id('asearch').value.trim().toLowerCase();
+  const q=ACAT?'?cat='+encodeURIComponent(ACAT):'';
+  try{
+    const d=await (await fetch('/api/assets/list'+q)).json();
+    const items=d.items.filter(it=>!kw||it.name.toLowerCase().includes(kw));
+    $id('aempty').hidden=!!items.length;
+    $id('agrid').innerHTML=items.map(it=>
+      '<div class="acard" data-p="'+it.path+'">'+
+      '<div class="im"><img loading="lazy" src="/api/assets/thumb?path='+encodeURIComponent(it.path)+'" alt=""></div>'+
+      '<div class="nm" title="'+it.name+'">'+it.name+'</div>'+
+      '<div class="ct">'+it.cat+' · '+Math.max(1,Math.round(it.size/1024))+' KB</div>'+
+      '<div class="ops"><button data-a="board">送展板台</button>'+
+      '<button data-a="editor">送编辑台</button>'+
+      '<button data-a="reveal">定位</button></div></div>').join('');
+    $id('amsg').textContent=d.count+' 个素材';
+  }catch(e){ $id('amsg').textContent='连不上出图台服务，重新双击启动 bat。'; }
+}
+$id('agrid').onclick=e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  const p=e.target.closest('.acard').dataset.p;
+  if(b.dataset.a==='board')location.href='/board.html?add='+encodeURIComponent(p);
+  else if(b.dataset.a==='editor')location.href='/editor.html?path='+encodeURIComponent(p);
+  else fetch('/api/reveal?path='+encodeURIComponent(p));
+};
+$id('acat').onchange=e=>{ACAT=e.target.value;loadAssets();};
+$id('asearch').oninput=loadAssets;
+$id('arefresh').onclick=loadAssets;
+$id('aopen').onclick=()=>fetch('/api/open_dir?dir='+encodeURIComponent($id('aroot').textContent));
+loadCats().then(loadAssets);
+</script>
+</body>
+</html>
